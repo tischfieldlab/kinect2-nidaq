@@ -1558,6 +1558,7 @@ namespace kinect2_nidaq
             fMetadata.IsLittleEndian = BitConverter.IsLittleEndian;
             fMetadata.DepthDataType = depthData.GetType().Name;
             fMetadata.ColorDataType = colorData.GetType().Name;
+            fMetadata.ApparatusName = Properties.Settings.Default.ApparatusName;
             
             if (IsNidaqEnabled)
             {

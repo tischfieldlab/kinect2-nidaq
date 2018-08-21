@@ -9,7 +9,11 @@ namespace Metadata
     public class kMetadata
     {
         // everything we want to save to JSON from each session
-
+        public  string ApparatusName
+        {
+            get;
+            set;
+        }
         public string SubjectName
         {
             get;
