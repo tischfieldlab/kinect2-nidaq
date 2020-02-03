@@ -1011,7 +1011,8 @@ namespace kinect2_nidaq
 
                         if (!VideoWriter.IsOpen)
                         {
-                            VideoWriter.Open(FilePath_ColorVid, Constants.kDefaultFrameWidth, Constants.kDefaultFrameHeight);
+                            VideoWriter.Open(FilePath_ColorVid, Constants.kDefaultFrameWidth, Constants.kDefaultFrameHeight,
+                                Constants.kFramesPerSecond, VideoCodec.Default, Properties.Settings.Default.BitRate); ;
                             VideoWriterInitialTimeSpan = colorData.RelativeTime;
                         }
                         ColorTSStream.WriteLine(String.Format("{0} {1}", colorData.RelativeTime.TotalMilliseconds, colorData.TimeStamp));
