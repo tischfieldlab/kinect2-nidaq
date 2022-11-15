@@ -1,0 +1,85 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Threading;
+
+namespace kinect2_nidaq.ViewModels
+{
+    public class PerformanceViewModel : ObservableObject
+    {
+        protected DispatcherTimer _checkTimer;
+        protected PerformanceCounter _cpuPerformance;
+        protected PerformanceCounter _ramPerformance;
+        protected string _diskPathToMonitor;
+        protected string _freeDiskSpace;
+
+        public PerformanceViewModel()
+        {
+            _cpuPerformance = new PerformanceCounter();
+            _ramPerformance = new PerformanceCounter();
+
+            _cpuPerformance.CategoryName = "Processor";
+            _cpuPerformance.CounterName = "% Processor Time";
+            _cpuPerformance.InstanceName = "_Total";
+
+            _ramPerformance.CategoryName = "Memory";
+            _ramPerformance.CounterName = "Available MBytes";
+
+            
+        }
+
+        public bool IsMonitoring { get => this._checkTimer != null && this._checkTimer.IsEnabled; }
+        public void StartMonitor()
+        {
+            this._checkTimer = new DispatcherTimer();
+            this._checkTimer.Interval = TimeSpan.FromMilliseconds(1000);
+            this._checkTimer.Tick += this.CheckTimerTick;
+            this._checkTimer.Start();
+        }
+
+        public void StopMonitor()
+        {
+            this._checkTimer.Stop();
+            this._checkTimer.Tick -= this.CheckTimerTick;
+            this._checkTimer = null;
+        }
+        protected void CheckTimerTick(object sender, EventArgs e)
+        {
+            try
+            {
+                if (Directory.Exists(this._diskPathToMonitor))
+                {
+                    FileInfo PathInfo = new FileInfo(this._diskPathToMonitor);
+                    DriveInfo SaveDrive = new DriveInfo(PathInfo.Directory.Root.FullName);
+                    Double FreeMem = SaveDrive.AvailableFreeSpace / 1e9;
+                    Double AllMem = SaveDrive.TotalSize / 1e9;
+                    this.FreeDiskSpace = String.Format("{0} {1:0.##} / {2:0.##} GB Free", SaveDrive.RootDirectory, FreeMem, AllMem);
+                }
+            }
+            catch
+            {
+                this.FreeDiskSpace = "N/A";
+            }
+            this.NotifyPropertyChanged(null);
+        }
+        
+
+        public string CPUPerformance { get => (100 - this._cpuPerformance.NextValue()).ToString("F1") + "% Free"; }
+        public string RAMPerformance { get => this._ramPerformance.NextValue().ToString("F1") + "MB Free"; }
+        public string FreeDiskSpace
+        {
+            get => this._freeDiskSpace;
+            set => this.SetField(ref this._freeDiskSpace, value);
+        }
+
+        public string DiskPathToMonitor
+        {
+            get => this._diskPathToMonitor;
+            set => this.SetField(ref this._diskPathToMonitor, value);
+        }
+    }
+}

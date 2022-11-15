@@ -5,7 +5,7 @@
     <Setting Name="FolderName" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\</Value>
     </Setting>
-    <Setting Name="SamplingRate" Type="System.String" Scope="User">
+    <Setting Name="SamplingRate" Type="System.Double" Scope="User">
       <Value Profile="(Default)">500</Value>
     </Setting>
     <Setting Name="SessionName" Type="System.String" Scope="User">

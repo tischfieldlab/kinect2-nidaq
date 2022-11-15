@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="kinect2_nidaq.Views.NIAnalogDAQ"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:kinect2_nidaq.Views"
+
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Grid.Column="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="NI-DAQ" FontSize="15" HorizontalAlignment="Center" Grid.ColumnSpan="3" VerticalAlignment="Bottom" FontWeight="Black"/>
+        
+        
+        <TextBlock Text="Device" Grid.Row="1" TextAlignment="Center" VerticalAlignment="Bottom"/>
+        <ComboBox Name="DevBox"
+                  ItemsSource="{Binding Path=AnalogDAQ.Settings.AvailableDevices}"
+                  SelectedItem="{Binding Path=AnalogDAQ.Settings.Device}"
+                  Grid.Row="2" />
+        
+        
+        <TextBlock Text="Terminal Configuration" Grid.Row="3" TextAlignment="Center" VerticalAlignment="Bottom"/>
+        <ComboBox Name="TerminalConfigBox"
+                  Grid.Row="4"
+                  ItemsSource="{Binding Path=AnalogDAQ.Settings.AvailableTerminals}"
+                  SelectedValue="{Binding Path=AnalogDAQ.Settings.TerminalConfiguration}"
+                  SelectedValuePath="TerminalConfiguration"/>
+        
+        
+        <TextBlock Text="Voltage Range (Volts)" Grid.Row="5" TextAlignment="Center"  VerticalAlignment="Bottom"/>
+        <ComboBox Name="VoltageRangeBox"
+                  Grid.Row="6"
+                  ItemsSource="{Binding Path=AnalogDAQ.Settings.AvailableVoltageRanges}"
+                  SelectedValue="{Binding Path=AnalogDAQ.Settings.VoltageRange}"
+                  SelectedValuePath="Value" />
+        
+        
+        <TextBlock Text="Sampling Rate (Hz)" Grid.Row="7" TextAlignment="Center" VerticalAlignment="Bottom" />
+        <TextBox Name="SamplingRateBox"
+                 Text="{Binding Path=AnalogDAQ.Settings.SamplingRate}"
+                 Grid.Row="8" />
+        
+        
+        <TextBlock Text="Channel Selection" TextAlignment="Center" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="2" />
+        <ListBox Name="aiChannelList"
+                 SelectionMode="Extended"
+                 Grid.Row="2"
+                 Grid.Column="2"
+                 Grid.RowSpan="10"
+                 ItemsSource="{Binding Path=AnalogDAQ.Settings.AvailableChannels}"
+                 >
+            <!--SelectedItem="{Binding Path=AnalogDAQ.Settings.SelectedChannels}"-->
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:ChangePropertyAction TargetObject="{Binding Mode=OneWay}" PropertyName="SelectedItems" Value="{Binding Path=SelectedItems, ElementName=aiChannelList}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListBox>
+    </Grid>
+</UserControl>

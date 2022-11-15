@@ -108,81 +108,77 @@ namespace Sensor
 
     }
     public class ColorFrameEventArgs : FrameEventArgs
+    {
+        public byte[] ColorData
         {
-            public byte[] ColorData
+            get
             {
-                get
-                {
-                    return fByteData;
-                }
-                set
-                {
-                    fByteData = value;
-                }
+                return fByteData;
             }
-
-            public ColorSpacePoint[] ColorSpacepoints
+            set
             {
-                get;
-                set;
-            }
-            public int DepthWidth
-            {
-                get;
-                set;
-            }
-            public int DepthHeight
-            {
-                get;
-                set;
-            }
-
-        }
-
-    public class DepthFrameEventArgs : FrameEventArgs
-        {
-            protected ushort fDepthMinReliableDistance = 0;
-            protected ushort fDepthMaxReliableDistance = 0;
-
-            public ushort[] DepthData
-            {
-                get
-                {
-                    return fShortData;
-                }
-                set
-                {
-                    fShortData = value;
-                }
-            }
-
-            public ushort DepthMinReliableDistance
-            {
-                get
-                {
-                    return fDepthMinReliableDistance;
-                }
-                set
-                {
-                    fDepthMinReliableDistance = value;
-                }
-            }
-
-            public ushort DepthMaxReliableDistance
-            {
-                get
-                {
-                    return fDepthMaxReliableDistance;
-                }
-                set
-                {
-                    fDepthMaxReliableDistance = value;
-                }
+                fByteData = value;
             }
         }
 
-
-
+        public ColorSpacePoint[] ColorSpacepoints
+        {
+            get;
+            set;
+        }
+        public int DepthWidth
+        {
+            get;
+            set;
+        }
+        public int DepthHeight
+        {
+            get;
+            set;
+        }
 
     }
+
+    public class DepthFrameEventArgs : FrameEventArgs
+    {
+        protected ushort fDepthMinReliableDistance = 0;
+        protected ushort fDepthMaxReliableDistance = 0;
+
+        public ushort[] DepthData
+        {
+            get
+            {
+                return fShortData;
+            }
+            set
+            {
+                fShortData = value;
+            }
+        }
+
+        public ushort DepthMinReliableDistance
+        {
+            get
+            {
+                return fDepthMinReliableDistance;
+            }
+            set
+            {
+                fDepthMinReliableDistance = value;
+            }
+        }
+
+        public ushort DepthMaxReliableDistance
+        {
+            get
+            {
+                return fDepthMaxReliableDistance;
+            }
+            set
+            {
+                fDepthMaxReliableDistance = value;
+            }
+        }
+    }
+}
 

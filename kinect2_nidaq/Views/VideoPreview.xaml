@@ -1,0 +1,148 @@
+﻿<UserControl x:Class="kinect2_nidaq.Views.VideoPreview"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:kinect2_nidaq.Views"
+             xmlns:conv="clr-namespace:kinect2_nidaq.Views.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <conv:ColorFrameConverter x:Key="ColorFrameConverter" />
+        <conv:DepthFrameConverter x:Key="DepthFrameConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="424" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="512" />
+            <ColumnDefinition Width="512" />
+        </Grid.ColumnDefinitions>
+        
+        
+        <TextBlock Text="Color" HorizontalAlignment="Center" FontSize="15"/>
+        <Image x:Name="ColorDisplay"
+               Source="{Binding Path=Kinect.LastColorFrame, Converter={StaticResource ColorFrameConverter}}"
+               Height="424"
+               Width="512"
+               Stretch="UniformToFill"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Left"
+               Grid.Row="1"
+               RenderTransformOrigin="0.5, 0.5">
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=Kinect.FlipFrameDisplay}" Value="True">
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="-1" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=Kinect.FlipFrameDisplay}" Value="False">
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+
+
+        <TextBlock Text="Depth" HorizontalAlignment="Center" FontSize="15" Grid.Column="1"/>
+        <Image x:Name="DepthDisplay"
+               Source="{Binding Path=Kinect.LastDepthFrame, Converter={StaticResource DepthFrameConverter}}"
+               HorizontalAlignment="Right"
+               Height="424"
+               Width="512"
+               Stretch="UniformToFill"
+               VerticalAlignment="Top"
+               Grid.Row="1"
+               Grid.Column="1"
+               RenderTransformOrigin="0.5, 0.5">
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=Kinect.FlipFrameDisplay}" Value="true">
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="-1" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=Kinect.FlipFrameDisplay}" Value="false">
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+
+
+        <Grid Grid.Row="2" Grid.Column="1" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="50" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <TextBlock Text="Min distance (mm)" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+            <Slider Name="DepthMinSlider"
+                    Grid.Row="1"
+                    Maximum="1000"
+                    Minimum="0"
+                    TickFrequency="100"
+                    IsSnapToTickEnabled="False"
+                    TickPlacement="BottomRight"  
+                    Value="{Binding Path=Kinect.DepthMinValue}" 
+                    />
+            <TextBox Name="DepthMinBox"
+                     Grid.Row="1"
+                     Grid.Column="2" 
+                     Text="{Binding Path=Kinect.DepthMinValue}"
+                     />
+            
+            
+            <TextBlock Text="Max distance (mm)" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Column="3"/>
+            <Slider Name="DepthMaxSlider"
+                    Grid.Row="1"
+                    Grid.Column="3"
+                    Maximum="1000"
+                    Minimum="0" 
+                    IsSnapToTickEnabled="False"
+                    TickFrequency="100"
+                    TickPlacement="BottomRight"
+                    Value="{Binding Path=Kinect.DepthMaxValue}"
+                    />
+            <TextBox Name="DepthMaxBox"
+                     Grid.Row="1"
+                     Grid.Column="5" 
+                     Text="{Binding Path=Kinect.DepthMaxValue}"
+                     />
+            <CheckBox Name="FlipDepth"
+                      Content="Un-mirror-flip image"
+                      IsChecked="{Binding Path=Kinect.FlipFrameDisplay}"
+                      Grid.Row="2"
+                      HorizontalAlignment="Center" />
+        </Grid>
+    </Grid>
+</UserControl>

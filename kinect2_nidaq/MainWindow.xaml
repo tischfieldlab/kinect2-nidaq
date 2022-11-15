@@ -9,7 +9,6 @@
         Title="Kinect2 Nidaq"
         Height="640.909"
         Width="1046.213"
-        Loaded="Window_Loaded"
         ResizeMode="CanMinimize"
         WindowStyle="None"
         Closing="Window_Closed"
@@ -61,6 +60,8 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="40" />
                             <RowDefinition Height="10" />
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -79,6 +80,14 @@
                         <!--<Button Content="Prepare NIDaq" Name="NidaqPrepare" Click="NidaqPrepare_Click" Grid.Row="10" IsEnabled="False" /-->
                         <TextBlock Text="Channel Selection" TextAlignment="Center" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="2" />
                         <ListBox Name="aiChannelList" SelectionMode="Extended" SelectionChanged="ChannelSelection_Changed" Grid.Row="2" Grid.Column="2" Grid.RowSpan="10" />
+
+                        <GridSplitter Grid.Row="16" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="5" Background="Gray" />
+
+                        <Grid Grid.Row="17" Grid.ColumnSpan="3">
+                            <CheckBox Content="Send TTL signal on frame capture" Name="EnableFrameCaptureTTLOutput" />
+                            
+                        </Grid>
+                        
 
                     </Grid>
                     

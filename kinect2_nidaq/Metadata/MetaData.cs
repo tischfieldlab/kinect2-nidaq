@@ -80,8 +80,6 @@ namespace Metadata
             set;
         }
 
-
-
         public int[] ColorResolution
         {
             get;
@@ -99,12 +97,5 @@ namespace Metadata
             get;
             set;
         }
-
-
-       
-        
-
-       
-
     }
 }

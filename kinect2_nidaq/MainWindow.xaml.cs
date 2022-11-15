@@ -15,7 +15,7 @@ using Microsoft.Kinect;
 using Sensor;
 using NationalInstruments;
 using NationalInstruments.DAQmx;
-using AForge.Video.FFMPEG;
+using Accord.Video.FFMPEG;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using Metadata;
@@ -267,6 +267,13 @@ namespace kinect2_nidaq
         /// Buffer timeout
         /// </summary>
         TimeSpan timeout = new TimeSpan(10000);
+
+
+
+
+
+
+
         
         /// <summary>
         /// Startup

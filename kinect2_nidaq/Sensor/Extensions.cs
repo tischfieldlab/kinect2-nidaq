@@ -138,11 +138,6 @@ namespace Sensor
             bitmap.WritePixels(new Int32Rect(0, 0, e.Width, e.Height), pixels, stride, 0);
             
             return bitmap;
-
-
         }
-
-
     }
-   
 }

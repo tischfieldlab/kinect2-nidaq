@@ -38,9 +38,9 @@ namespace kinect2_nidaq.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("500")]
-        public string SamplingRate {
+        public double SamplingRate {
             get {
-                return ((string)(this["SamplingRate"]));
+                return ((double)(this["SamplingRate"]));
             }
             set {
                 this["SamplingRate"] = value;
