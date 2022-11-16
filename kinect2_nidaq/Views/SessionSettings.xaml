@@ -24,7 +24,7 @@
 
 
 
-        <Grid Grid.Column="3">
+        <Grid Grid.Column="3" IsEnabled="{Binding Path=Settings.IsSettingsEnabled}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
@@ -50,7 +50,7 @@
             <TextBox Name="SessionName"
                      Grid.Column="1"
                      Grid.Row="2"
-                     Text="{Binding Path=Recording.SessionName}"
+                     Text="{Binding Path=Settings.SessionName}"
                      Grid.ColumnSpan="2" />
             
             
@@ -58,7 +58,7 @@
             <TextBox Name="SubjectName"
                      Grid.Column="1"
                      Grid.Row="4"
-                     Text="{Binding Path=Recording.SubjectName}"
+                     Text="{Binding Path=Settings.SubjectName}"
                      Grid.ColumnSpan="2" />
             
             
@@ -67,7 +67,7 @@
             <TextBox Name="FolderName"
                      Grid.Column="1"
                      Grid.Row="6"
-                     Text="{Binding Path=Recording.FolderName}"
+                     Text="{Binding Path=Settings.FolderName}"
                      Grid.ColumnSpan="2" />
             
             
@@ -81,13 +81,25 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <CheckBox Name="CheckNoTimer" VerticalAlignment="Center" IsChecked="{Binding Path=Recording.IsIndeterminateRecording}" >
+                <CheckBox Name="CheckNoTimer"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding Path=Settings.IsIndeterminateRecording}"
+                          IsEnabled="{Binding Path=Settings.IsIndeterminateRecordingEnabled}">
                     <TextBlock Text="Record until user clicks stop" VerticalAlignment="Center" />
                 </CheckBox>
-                <CheckBox VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Name="PreviewMode" IsChecked="{Binding Path=Recording.IsPreviewMode}">
+                <CheckBox VerticalAlignment="Center"
+                          Grid.Row="1"
+                          Grid.Column="0"
+                          Name="PreviewMode"
+                          IsChecked="{Binding Path=Settings.IsPreviewMode}">
                     <TextBlock Text="Preview Mode" />
                 </CheckBox>
-                <CheckBox VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Name="CompressionMode" IsChecked="{Binding Path=Recording.CompressSession}">
+                <CheckBox VerticalAlignment="Center"
+                          Grid.Row="2"
+                          Grid.Column="0"
+                          Name="CompressionMode"
+                          IsChecked="{Binding Path=Settings.CompressSession}"
+                          IsEnabled="{Binding Path=Settings.IsCompressSessionEnabled}">
                     <TextBlock Text="Compress Session" />
                 </CheckBox>
                 <Grid Grid.Column="1" Grid.RowSpan="2">
@@ -96,8 +108,8 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBox Name="RecordingTimeBox"
-                             Text="{Binding Path=Recording.RecordingDuration}"
-                             IsEnabled="{Binding Path=Recording.IsIndeterminateRecording, Converter={StaticResource BooleanInvertConverter}}"
+                             Text="{Binding Path=Settings.RecordingDuration}"
+                             IsEnabled="{Binding Path=Settings.IsRecordingDurationEnabled}"
                              />
                     <TextBlock Text="Recording time (minutes)"
                                Name="RecordingTimeText" 
@@ -116,14 +128,24 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <CheckBox VerticalAlignment="Center" Name="CheckDepthStream" IsChecked="{Binding Path=Kinect.IsDepthStreamEnabled}">
+                <CheckBox VerticalAlignment="Center"
+                          Name="CheckDepthStream"
+                          IsChecked="{Binding Path=Settings.IsDepthStreamEnabled}">
                     <TextBlock Text="Depth Stream" />
                 </CheckBox>
-                <CheckBox VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Name="CheckColorStream" IsChecked="{Binding Path=Kinect.IsColorStreamEnabled}">
+                <CheckBox VerticalAlignment="Center"
+                          Grid.Row="1"
+                          Grid.Column="0"
+                          Name="CheckColorStream"
+                          IsChecked="{Binding Path=Settings.IsColorStreamEnabled}">
                     <TextBlock Text="Color Stream" />
                 </CheckBox>
 
-                <CheckBox VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Name="CheckNidaqStream" IsChecked="{Binding Path=AnalogDAQ.Settings.IsEnabled}">
+                <CheckBox VerticalAlignment="Center"
+                          Grid.Row="3"
+                          Grid.Column="0"
+                          Name="CheckNidaqStream"
+                          IsChecked="{Binding Path=AnalogDAQ.Settings.IsEnabled}">
                     <TextBlock Text="Nidaq Stream" />
                 </CheckBox>
                 <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" >
@@ -132,8 +154,20 @@
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Button Content="Start Session"  Name="StartButton" Click="StartButton_Click" IsEnabled="False" Grid.Column="0" Height="35"  Background="LightGreen"/>
-                    <Button Content="Stop Session" Name="StopButton" Click="StopButton_Click" IsEnabled="False" Grid.Column="2" Height="35" Background="LightSalmon"/>
+                    <Button Content="Start Session"
+                            Command="{Binding Path=StartRecordingCommand}"
+                            Name="StartButton"
+                            Grid.Column="0"
+                            Height="35"
+                            Background="LightGreen"/>
+                    
+                    <Button Content="Stop Session"
+                            Name="StopButton"
+                            Click="StopButton_Click"
+                            IsEnabled="False"
+                            Grid.Column="2"
+                            Height="35"
+                            Background="LightSalmon" />
                 </Grid>
             </Grid>
 

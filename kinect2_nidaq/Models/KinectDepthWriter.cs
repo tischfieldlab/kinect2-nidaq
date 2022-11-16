@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kinect2_nidaq.ViewModels.KinectV2
+namespace kinect2_nidaq.Models
 {
-    public class KinectV2DepthWriter
+    public class KinectDepthWriter : IDataWriter
     {
         private FileStream _depthTsFileStream;
         private StreamWriter _depthTsStreamWriter;
@@ -26,10 +26,10 @@ namespace kinect2_nidaq.ViewModels.KinectV2
         private Task _writingTask;
 
 
-        public KinectV2DepthWriter(string destPath, BlockingCollection<DepthFrameEventArgs> queue)
+        public KinectDepthWriter(string tsDestPath, string videoDestPath, BlockingCollection<DepthFrameEventArgs> queue)
         {
-            this._tsDestPath = destPath;
-            this._videoDestPath = destPath;
+            this._tsDestPath = tsDestPath;
+            this._videoDestPath = videoDestPath;
 
             this._depthTsFileStream = new FileStream(this._tsDestPath, FileMode.Append);
             this._depthTsStreamWriter = new StreamWriter(this._depthTsFileStream);

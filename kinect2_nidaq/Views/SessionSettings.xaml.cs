@@ -33,7 +33,7 @@ namespace kinect2_nidaq.Views
             dialog.IsFolderPicker = true;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                (this.DataContext as MainWindowViewModel).Recording.FolderName = dialog.FileName;
+                (this.DataContext as MainWindowViewModel).Settings.FolderName = dialog.FileName;
             }
         }
 

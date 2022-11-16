@@ -21,6 +21,9 @@ namespace kinect2_nidaq.ViewModels.AnalogDAQ
             this.AvailableChannels = new ObservableCollection<string>();
 
             this.SamplingRate = Settings.Default.SamplingRate;
+
+            this.PopulateDevices();
+            this.IsEnabled = this.AvailableDevices.Count > 0;
         }
 
         public bool IsEnabled

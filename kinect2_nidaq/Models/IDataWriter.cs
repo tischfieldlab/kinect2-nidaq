@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kinect2_nidaq.Sensor
+namespace kinect2_nidaq.Models
 {
-    class DIO
+    interface IDataWriter
     {
-         
+        void Start();
+        void Stop();
     }
 }

@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace kinect2_nidaq.ViewModels
 {
-    public class VideoPreviewViewModel
+    public interface IDeviceViewModel
     {
+        void Initialize();
+        void Start();
+        void Stop();
     }
 }

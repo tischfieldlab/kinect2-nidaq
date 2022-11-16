@@ -1,56 +1,81 @@
 ﻿using Microsoft.Kinect;
 using Sensor;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
-namespace kinect2_nidaq.ViewModels.KinectV2
+namespace kinect2_nidaq.Models
 {
-    public class KinectViewModel : ObservableObject
+    public class KinectV2 : IKinectDevice
     {
         private KinectSensor _sensor;
         private bool _isInitialized;
+        private bool _isOpen;
 
         private bool _isColorStreamEnabled;
         private ColorFrameReader _colorFrameReader;
-        private BlockingCollection<ColorFrameEventArgs> _colorFrameCollection;
-        private int _colorFramesDropped;
-        private byte[] _colorData = new byte[Constants.kDefaultColorFrameHeight * Constants.kDefaultColorFrameWidth * Constants.kBytesPerPixel];
-        private ColorFrameEventArgs _lastColorFrame;
+        private byte[] _colorData;
+        private ColorSpacePoint[] _colorSpacePoints;
 
         private bool _isDepthStreamEnabled;
         private DepthFrameReader _depthFrameReader;
-        private BlockingCollection<DepthFrameEventArgs> _depthFrameCollection;
-        private int _depthFramesDropped;
-        private ushort[] _depthData = new ushort[Constants.kDefaultFrameHeight * Constants.kDefaultFrameWidth];
-        private DepthFrameEventArgs _lastDepthFrame;
+        private ushort[] _depthData;
 
-        private ColorSpacePoint[] _colorSpacePoints;
-
-        private bool _flipFrameDisplay;
-        private ushort _depthMinDisplay;
-        private ushort _depthMaxDisplay;
-
-
-        public KinectViewModel()
+        public KinectV2()
         {
-            this.Initialize();
+            this._colorData = new byte[Constants.kDefaultColorFrameHeight * Constants.kDefaultColorFrameWidth * Constants.kBytesPerPixel];
+            this._depthData = new ushort[Constants.kDefaultFrameHeight * Constants.kDefaultFrameWidth];
+        }
+
+        public event EventHandler<ColorFrameEventArgs> ColorFrameProduced;
+        public event EventHandler<DepthFrameEventArgs> DepthFrameProduced;
+        public event EventHandler ColorFrameDropped;
+        public event EventHandler DepthFrameDropped;
+
+
+        public bool IsInitialized { get => this._isInitialized; }
+        public bool IsColorStreamEnabled
+        {
+            get => this._isColorStreamEnabled;
+            set
+            {
+                if (value != this._isColorStreamEnabled)
+                {
+                    if (this._isOpen)
+                    {
+                        throw new ApplicationException("Cannot enable/disable color stream while device is open!");
+                    }
+                    this._isColorStreamEnabled = value;
+                }
+            }
+        }
+        public bool IsDepthStreamEnabled {
+            get => this._isDepthStreamEnabled;
+            set
+            {
+                if (value != this._isDepthStreamEnabled)
+                {
+                    if (this._isOpen)
+                    {
+                        throw new ApplicationException("Cannot enable/disable depth stream while device is open!");
+                    }
+                    this._isDepthStreamEnabled = value;
+                }
+            }
         }
 
         public void Initialize()
         {
             this._sensor = KinectSensor.GetDefault();
-            if (this._sensor != null)
+            if (this._sensor != null && this._sensor.IsAvailable)
             {
                 this._isInitialized = true;
             }
             else
             {
-                MessageBox.Show("No Kinect found");
+                throw new DeviceNotFoundException();
             }
         }
 
@@ -61,108 +86,37 @@ namespace kinect2_nidaq.ViewModels.KinectV2
 
             if (this.IsColorStreamEnabled)
             {
-                this._colorFrameCollection = new BlockingCollection<ColorFrameEventArgs>(Constants.kMaxFrames);
                 this._colorFrameReader = this._sensor.ColorFrameSource.OpenReader();
                 this._colorFrameReader.FrameArrived += ColorReader_FrameArrived;
             }
 
             if (this.IsDepthStreamEnabled)
             {
-                this._depthFrameCollection = new BlockingCollection<DepthFrameEventArgs>(Constants.kMaxFrames);
                 this._depthFrameReader = this._sensor.DepthFrameSource.OpenReader();
                 this._depthFrameReader.FrameArrived += DepthReader_FrameArrived;
             }
 
             this._sensor.Open();
+            this._isOpen = true;
         }
-
-        
 
         public void Stop()
         {
             this._sensor.Close();
+            this._isOpen = false;
+            this._isInitialized = false;
 
             if (this.IsColorStreamEnabled)
             {
-                this._colorFrameCollection.CompleteAdding();
-                this._colorFrameCollection.Dispose();
-                this._colorFrameCollection = null;
-
                 this._colorFrameReader.Dispose();
                 this._colorFrameReader = null;
             }
             if (this.IsDepthStreamEnabled)
             {
-                this._depthFrameCollection.CompleteAdding();
-                this._depthFrameCollection.Dispose();
-                this._depthFrameCollection = null;
-
                 this._depthFrameReader.Dispose();
                 this._depthFrameReader = null;
             }
-
         }
-
-        
-        public bool IsColorStreamEnabled
-        {
-            get => this._isColorStreamEnabled;
-            set => this.SetField(ref this._isColorStreamEnabled, value);
-        }
-        public BlockingCollection<ColorFrameEventArgs> ColorStream
-        {
-            get => this._colorFrameCollection;
-        }
-        public int ColorFramesDropped
-        {
-            get => this._colorFramesDropped;
-            set => this.SetField(ref this._colorFramesDropped, value);
-        }
-        public ColorFrameEventArgs LastColorFrame
-        {
-            get => this._lastColorFrame;
-            set => this.SetField(ref this._lastColorFrame, value);
-        }
-
-
-        public bool IsDepthStreamEnabled
-        {
-            get => this._isDepthStreamEnabled;
-            set => this.SetField(ref this._isDepthStreamEnabled, value);
-        }
-        public BlockingCollection<DepthFrameEventArgs> DepthStream
-        {
-            get => this._depthFrameCollection;
-        }
-        public int DepthFramesDropped
-        {
-            get => this._depthFramesDropped;
-            set => this.SetField(ref this._depthFramesDropped, value);
-        }
-        public DepthFrameEventArgs LastDepthFrame
-        {
-            get => this._lastDepthFrame;
-            set => this.SetField(ref this._lastDepthFrame, value);
-        }
-
-
-        public bool FlipFrameDisplay
-        {
-            get => this._flipFrameDisplay;
-            set => this.SetField(ref this._flipFrameDisplay, value);
-        }
-        public ushort DepthMinValue
-        {
-            get => this._depthMinDisplay;
-            set => this.SetField(ref this._depthMinDisplay, value, () => Properties.Settings.Default.DepthMinValue = value);
-        }
-        public ushort DepthMaxValue
-        {
-            get => this._depthMaxDisplay;
-            set => this.SetField(ref this._depthMaxDisplay, value, () => Properties.Settings.Default.DepthMaxValue = value);
-        }
-        
-
 
 
         private void ColorReader_FrameArrived(object sender, ColorFrameArrivedEventArgs e)
@@ -177,7 +131,7 @@ namespace kinect2_nidaq.ViewModels.KinectV2
 
                 if (frame == null)
                 {
-                    ColorFramesDropped++;
+                    this.ColorFrameDropped?.Invoke(this, new EventArgs());
                 }
                 else
                 {
@@ -199,12 +153,7 @@ namespace kinect2_nidaq.ViewModels.KinectV2
                     colorEventArgs.DepthWidth = Constants.kDefaultFrameWidth;
                     colorEventArgs.DepthHeight = Constants.kDefaultFrameHeight;
 
-                    // update to include absolute timestamps with hi-rest stopwatch
-                    this.LastColorFrame = colorEventArgs;
-
-                    // don't add to the queue if we're in preview mode
-                    this._colorFrameCollection.Add(colorEventArgs);
-
+                    this.ColorFrameProduced?.Invoke(this, colorEventArgs);
                 }
             }
         }
@@ -217,7 +166,7 @@ namespace kinect2_nidaq.ViewModels.KinectV2
 
                 if (frame == null)
                 {
-                    this.DepthFramesDropped++;
+                    this.DepthFrameDropped?.Invoke(this, new EventArgs());
                 }
                 else
                 {
@@ -238,13 +187,7 @@ namespace kinect2_nidaq.ViewModels.KinectV2
                     depthEventArgs.DepthMinReliableDistance = frame.DepthMinReliableDistance;
                     depthEventArgs.DepthMaxReliableDistance = frame.DepthMaxReliableDistance;
 
-                    LastDepthFrame = depthEventArgs;
-
-                    // don't add if we're in preview mode
-                    if (/*IsRecordingEnabled && */IsDepthStreamEnabled) // TODO: respect recording
-                    {
-                        this._depthFrameCollection.Add(depthEventArgs);
-                    }
+                    this.DepthFrameProduced?.Invoke(this, depthEventArgs);
                 }
             }
         }

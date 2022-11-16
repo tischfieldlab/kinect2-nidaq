@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kinect2_nidaq.ViewModels.KinectV2
+namespace kinect2_nidaq.Models
 {
-    public class KinectV2ColorWriter
+    public class KinectColorWriter : IDataWriter
     {
         private FileStream _colorTsFileStream;
         private StreamWriter _colorTsStreamWriter;
@@ -24,10 +24,10 @@ namespace kinect2_nidaq.ViewModels.KinectV2
         private Task _writingTask;
 
 
-        public KinectV2ColorWriter(string destPath, BlockingCollection<ColorFrameEventArgs> queue)
+        public KinectColorWriter(string tsDestPath, string videoDestPath, BlockingCollection<ColorFrameEventArgs> queue)
         {
-            this._tsDestPath = destPath;
-            this._videoDestPath = destPath;
+            this._tsDestPath = tsDestPath;
+            this._videoDestPath = videoDestPath;
 
             this._colorTsFileStream = new FileStream(this._tsDestPath, FileMode.Append);
             this._colorTsStreamWriter = new StreamWriter(this._colorTsFileStream);

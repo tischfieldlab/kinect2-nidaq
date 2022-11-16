@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kinect2_nidaq.ViewModels.AnalogDAQ
+namespace kinect2_nidaq.Models
 {
-    public class AnalogDaqWriter
+    public class AnalogDaqWriter : IDataWriter
     {
         private FileStream _fileStream;
         private BinaryWriter _binaryWriter;
@@ -70,7 +70,6 @@ namespace kinect2_nidaq.ViewModels.AnalogDAQ
                         double[] tmp = NIDatum[i].GetScaledData();
 
                         // do something with each datapoint and timestamp
-
                         data[i] = new double[nsamples];
                         data[i] = tmp;
                     }
@@ -92,7 +91,6 @@ namespace kinect2_nidaq.ViewModels.AnalogDAQ
                             writestring,
                             (double)timestamps[i].WholeSeconds + timestamps[i].FractionalSeconds));*/
                         this._binaryWriter.Write((double)timestamps[i].WholeSeconds + timestamps[i].FractionalSeconds);
-
                     }
                 }
             }

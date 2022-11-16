@@ -127,8 +127,8 @@
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
-    <Reference Include="NationalInstruments.Common, Version=19.0.40.49152, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.DAQmx, Version=20.1.45.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Common" />
+    <Reference Include="NationalInstruments.DAQmx" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -168,27 +168,37 @@
       <DependentUpon>MainWindow2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Metadata\MetaData.cs" />
-    <Compile Include="Models\Recorder.cs" />
+    <Compile Include="Models\FilePathHelper.cs" />
+    <Compile Include="Models\IDataWriter.cs" />
+    <Compile Include="Models\IKinectDevice.cs" />
+    <Compile Include="Models\KinectV2.cs" />
+    <Compile Include="Models\MetadataWriter.cs" />
+    <Compile Include="Models\Recording\Recorder.cs" />
+    <Compile Include="Models\Recording\IndeterminantRecordingLength.cs" />
+    <Compile Include="Models\Recording\IRecordingLengthStrategy.cs" />
+    <Compile Include="Models\Recording\TimedRecordingLength.cs" />
+    <Compile Include="Models\SessionCompressor.cs" />
     <Compile Include="Sensor\Constants.cs" />
-    <Compile Include="Sensor\DIO.cs" />
     <Compile Include="Sensor\Extensions.cs" />
     <Compile Include="Sensor\FrameData.cs" />
     <Compile Include="Sensor\NidaqData.cs" />
-    <Compile Include="ViewModels\AnalogDAQ\AnalogDaqWriter.cs" />
+    <Compile Include="Models\AnalogDaqWriter.cs" />
     <Compile Include="ViewModels\AnalogDAQ\AnalogNIDAQSettingsViewModel.cs" />
     <Compile Include="ViewModels\AnalogDAQ\AnalogNIDAQViewModel.cs" />
+    <Compile Include="ViewModels\Commands\BaseCommand.cs" />
     <Compile Include="ViewModels\Commands\StartRecordingCommand.cs" />
-    <Compile Include="ViewModels\KinectV2\KinectV2DepthWriter.cs" />
-    <Compile Include="ViewModels\KinectV2\KinectV2ColorWriter.cs" />
+    <Compile Include="Models\KinectDepthWriter.cs" />
+    <Compile Include="Models\KinectColorWriter.cs" />
+    <Compile Include="ViewModels\IDeviceViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="Views\Converters\BooleanInvertConverter.cs" />
     <Compile Include="Views\Converters\DepthFrameConverter.cs" />
     <Compile Include="Views\Converters\ColorFrameConverter.cs" />
-    <Compile Include="ViewModels\KinectV2\KinectViewModel.cs" />
+    <Compile Include="ViewModels\KinectViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\ObservableObject.cs" />
     <Compile Include="ViewModels\PerformanceViewModel.cs" />
     <Compile Include="ViewModels\RecordingViewModel.cs" />
-    <Compile Include="ViewModels\VideoPreviewViewModel.cs" />
     <Compile Include="Views\NIAnalogDAQ.xaml.cs">
       <DependentUpon>NIAnalogDAQ.xaml</DependentUpon>
     </Compile>
@@ -286,32 +296,32 @@
   <ItemGroup>
     <PublishFile Include="Microsoft.Kinect">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="NationalInstruments.MStudioCLM">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="NationalInstruments.NiLmClientDLL">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
   </ItemGroup>

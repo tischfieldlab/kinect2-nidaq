@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,24 +8,34 @@ using System.Windows.Input;
 
 namespace kinect2_nidaq.ViewModels.Commands
 {
-    public class StartRecordingCommand : ICommand
+    public class StartRecordingCommand : BaseCommand
     {
-        protected MainWindowViewModel viewModel;
-        public StartRecordingCommand(MainWindowViewModel viewModel)
+        public StartRecordingCommand(MainWindowViewModel ViewModel) : base(ViewModel)
         {
-            this.viewModel = viewModel;
         }
 
-        public event EventHandler CanExecuteChanged;
-
-        public bool CanExecute(object parameter)
+        public override bool CanExecute(object parameter)
         {
-            return true;
+            var cfg = this.ViewModel.Settings;
+
+
+            if (cfg.IsPreviewMode)
+            {
+                return true;
+            }
+            else
+            {
+                if (!(cfg.IsColorStreamEnabled || cfg.IsDepthStreamEnabled || cfg.AnalogNIDAQ.IsEnabled))
+                    // At least one stream should be enabled!
+                    return false;
+
+                return true;
+            }
         }
 
-        public void Execute(object parameter)
+        public override void Execute(object parameter)
         {
-            //this.viewModel.Recording.
+            this.ViewModel.StartRecording();
         }
     }
 }

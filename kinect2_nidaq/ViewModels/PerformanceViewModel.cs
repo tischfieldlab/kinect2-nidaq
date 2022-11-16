@@ -17,7 +17,9 @@ namespace kinect2_nidaq.ViewModels
         protected string _diskPathToMonitor;
         protected string _freeDiskSpace;
 
-        public PerformanceViewModel()
+        protected SettingsViewModel _settings;
+
+        public PerformanceViewModel(SettingsViewModel settings)
         {
             _cpuPerformance = new PerformanceCounter();
             _ramPerformance = new PerformanceCounter();
@@ -29,7 +31,8 @@ namespace kinect2_nidaq.ViewModels
             _ramPerformance.CategoryName = "Memory";
             _ramPerformance.CounterName = "Available MBytes";
 
-            
+            this._settings = settings;
+            this.StartMonitor();
         }
 
         public bool IsMonitoring { get => this._checkTimer != null && this._checkTimer.IsEnabled; }
@@ -51,9 +54,9 @@ namespace kinect2_nidaq.ViewModels
         {
             try
             {
-                if (Directory.Exists(this._diskPathToMonitor))
+                if (Directory.Exists(this._settings.FolderName))
                 {
-                    FileInfo PathInfo = new FileInfo(this._diskPathToMonitor);
+                    FileInfo PathInfo = new FileInfo(this._settings.FolderName);
                     DriveInfo SaveDrive = new DriveInfo(PathInfo.Directory.Root.FullName);
                     Double FreeMem = SaveDrive.AvailableFreeSpace / 1e9;
                     Double AllMem = SaveDrive.TotalSize / 1e9;
@@ -76,10 +79,26 @@ namespace kinect2_nidaq.ViewModels
             set => this.SetField(ref this._freeDiskSpace, value);
         }
 
-        public string DiskPathToMonitor
+        public string ApplicationStatus
         {
-            get => this._diskPathToMonitor;
-            set => this.SetField(ref this._diskPathToMonitor, value);
+            get => this._applicationStatus;
+            set => this.SetField(ref this._applicationStatus, value);
         }
+        protected string _applicationStatus;
+
+
+        public double Progress
+        {
+            get => this._progress;
+            set => this.SetField(ref this._progress, value);
+        }
+        protected double _progress;
+
+        public string ProgressETA
+        {
+            get => this._progressETA;
+            set => this.SetField(ref this._progressETA, value);
+        }
+        protected string _progressETA;
     }
 }

@@ -8,7 +8,7 @@
 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Grid.Column="1">
+    <Grid Grid.Column="1" IsEnabled="{Binding Path=Settings.AnalogDAQ.IsEnabled}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition Height="*" />
@@ -39,30 +39,30 @@
         
         <TextBlock Text="Device" Grid.Row="1" TextAlignment="Center" VerticalAlignment="Bottom"/>
         <ComboBox Name="DevBox"
-                  ItemsSource="{Binding Path=AnalogDAQ.Settings.AvailableDevices}"
-                  SelectedItem="{Binding Path=AnalogDAQ.Settings.Device}"
+                  ItemsSource="{Binding Path=Settings.AnalogNIDAQ.AvailableDevices}"
+                  SelectedItem="{Binding Path=Settings.AnalogNIDAQ.Device}"
                   Grid.Row="2" />
         
         
         <TextBlock Text="Terminal Configuration" Grid.Row="3" TextAlignment="Center" VerticalAlignment="Bottom"/>
         <ComboBox Name="TerminalConfigBox"
                   Grid.Row="4"
-                  ItemsSource="{Binding Path=AnalogDAQ.Settings.AvailableTerminals}"
-                  SelectedValue="{Binding Path=AnalogDAQ.Settings.TerminalConfiguration}"
+                  ItemsSource="{Binding Path=Settings.AnalogNIDAQ.AvailableTerminals}"
+                  SelectedValue="{Binding Path=Settings.AnalogNIDAQ.TerminalConfiguration}"
                   SelectedValuePath="TerminalConfiguration"/>
         
         
         <TextBlock Text="Voltage Range (Volts)" Grid.Row="5" TextAlignment="Center"  VerticalAlignment="Bottom"/>
         <ComboBox Name="VoltageRangeBox"
                   Grid.Row="6"
-                  ItemsSource="{Binding Path=AnalogDAQ.Settings.AvailableVoltageRanges}"
-                  SelectedValue="{Binding Path=AnalogDAQ.Settings.VoltageRange}"
+                  ItemsSource="{Binding Path=Settings.AnalogNIDAQ.AvailableVoltageRanges}"
+                  SelectedValue="{Binding Path=Settings.AnalogNIDAQ.VoltageRange}"
                   SelectedValuePath="Value" />
         
         
         <TextBlock Text="Sampling Rate (Hz)" Grid.Row="7" TextAlignment="Center" VerticalAlignment="Bottom" />
         <TextBox Name="SamplingRateBox"
-                 Text="{Binding Path=AnalogDAQ.Settings.SamplingRate}"
+                 Text="{Binding Path=Settings.AnalogNIDAQ.SamplingRate}"
                  Grid.Row="8" />
         
         
@@ -72,9 +72,9 @@
                  Grid.Row="2"
                  Grid.Column="2"
                  Grid.RowSpan="10"
-                 ItemsSource="{Binding Path=AnalogDAQ.Settings.AvailableChannels}"
+                 ItemsSource="{Binding Path=Settings.AnalogNIDAQ.AvailableChannels}"
                  >
-            <!--SelectedItem="{Binding Path=AnalogDAQ.Settings.SelectedChannels}"-->
+            <!--SelectedItem="{Binding Path=Settings.AnalogNIDAQ.SelectedChannels}"-->
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:ChangePropertyAction TargetObject="{Binding Mode=OneWay}" PropertyName="SelectedItems" Value="{Binding Path=SelectedItems, ElementName=aiChannelList}"/>
