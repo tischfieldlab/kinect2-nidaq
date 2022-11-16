@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace kinect2_nidaq.ViewModels
 {
@@ -71,6 +72,7 @@ namespace kinect2_nidaq.ViewModels
                 this._sensor.DepthFrameDropped += this._sensor_DepthFrameDropped;
                 this._sensor.DepthFrameProduced += this._sensor_DepthFrameProduced;
             }
+            this._isInitialized = true;
         }
 
 
@@ -85,6 +87,7 @@ namespace kinect2_nidaq.ViewModels
         public void Stop()
         {
             this._sensor.Stop();
+            this._isInitialized = false;
 
             if (this.settings.IsColorStreamEnabled)
             {
@@ -121,8 +124,18 @@ namespace kinect2_nidaq.ViewModels
         public ColorFrameEventArgs LastColorFrame
         {
             get => this._lastColorFrame;
-            set => this.SetField(ref this._lastColorFrame, value);
+            set
+            {
+                this.SetField(ref this._lastColorFrame, value);
+                Task.Run(() => this.LastColorFrameBitmap = this._lastColorFrame.ToBitmap());
+            }
         }
+        public BitmapSource LastColorFrameBitmap
+        {
+            get => this._lastColorFrameBitmap;
+            set => this.SetField(ref this._lastColorFrameBitmap, value);
+        }
+        protected BitmapSource _lastColorFrameBitmap;
 
 
         public BlockingCollection<DepthFrameEventArgs> DepthStream { get; private set; }
@@ -134,8 +147,18 @@ namespace kinect2_nidaq.ViewModels
         public DepthFrameEventArgs LastDepthFrame
         {
             get => this._lastDepthFrame;
-            set => this.SetField(ref this._lastDepthFrame, value);
+            set
+            {
+                this.SetField(ref this._lastDepthFrame, value);
+                Task.Run(() => this.LastDepthFrameBitmap = this._lastDepthFrame.ToBitmap());
+            }
         }
+        public BitmapSource LastDepthFrameBitmap
+        {
+            get => this._lastDepthFrameBitmap;
+            set => this.SetField(ref this._lastDepthFrameBitmap, value);
+        }
+        protected BitmapSource _lastDepthFrameBitmap;
 
 
         public bool FlipFrameDisplay

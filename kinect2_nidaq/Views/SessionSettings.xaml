@@ -11,7 +11,7 @@
     <UserControl.Resources>
         <conv:BooleanInvertConverter x:Key="BooleanInvertConverter" />
     </UserControl.Resources>
-    <Grid>
+    <Grid IsEnabled="{Binding Path=Settings.IsSettingsEnabled}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20" />
             <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=NidaqWidth}" />
@@ -24,7 +24,7 @@
 
 
 
-        <Grid Grid.Column="3" IsEnabled="{Binding Path=Settings.IsSettingsEnabled}">
+        <Grid Grid.Column="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
                 <RowDefinition Height="*" />

@@ -121,11 +121,11 @@ namespace kinect2_nidaq.ViewModels
 
         public void ActivateSettings()
         {
-            this.IsSettingsEnabled = false;
+            this.IsSettingsEnabled = true;
         }
         public void InactivateSettings()
         {
-            this.IsSettingsEnabled = true;
+            this.IsSettingsEnabled = false;
         }
 
         public void Validate()

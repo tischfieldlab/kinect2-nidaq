@@ -25,7 +25,7 @@
         
         <TextBlock Text="Color" HorizontalAlignment="Center" FontSize="15"/>
         <Image x:Name="ColorDisplay"
-               Source="{Binding Path=Kinect.LastColorFrame, Converter={StaticResource ColorFrameConverter}}"
+               Source="{Binding Path=Kinect.LastColorFrameBitmap}"
                Height="424"
                Width="512"
                Stretch="UniformToFill"
@@ -58,7 +58,7 @@
 
         <TextBlock Text="Depth" HorizontalAlignment="Center" FontSize="15" Grid.Column="1"/>
         <Image x:Name="DepthDisplay"
-               Source="{Binding Path=Kinect.LastDepthFrame, Converter={StaticResource DepthFrameConverter}}"
+               Source="{Binding Path=Kinect.LastDepthFrameBitmap}"
                HorizontalAlignment="Right"
                Height="424"
                Width="512"

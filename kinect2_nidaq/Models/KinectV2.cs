@@ -68,8 +68,16 @@ namespace kinect2_nidaq.Models
 
         public void Initialize()
         {
+            bool sensorAvailable = false;
             this._sensor = KinectSensor.GetDefault();
-            if (this._sensor != null && this._sensor.IsAvailable)
+            if (this._sensor != null)
+            {
+                this._sensor.Open();
+                sensorAvailable = this._sensor.IsAvailable;
+                this._sensor.Close();                
+            } 
+
+            if (sensorAvailable)
             {
                 this._isInitialized = true;
             }

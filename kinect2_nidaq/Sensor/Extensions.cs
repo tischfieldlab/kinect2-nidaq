@@ -69,7 +69,7 @@ namespace Sensor
 
                 bitmap.WritePixels(new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight), colorData, stride, 0);
             }
-
+            bitmap.Freeze();
             return bitmap;
         }
 
@@ -136,7 +136,7 @@ namespace Sensor
             WriteableBitmap bitmap;
             bitmap = new WriteableBitmap(e.Width, e.Height, Constants.kDpi, Constants.kDpi, Constants.kFormat, null);
             bitmap.WritePixels(new Int32Rect(0, 0, e.Width, e.Height), pixels, stride, 0);
-            
+            bitmap.Freeze();
             return bitmap;
         }
     }

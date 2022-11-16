@@ -93,6 +93,10 @@ namespace kinect2_nidaq.ViewModels
 
                 recorder.Start();
             }
+            else
+            {
+                this.Kinect.Start();
+            }
         }
 
         private void Compressor_Progress(object sender, CompressionProgressEventArgs e)
