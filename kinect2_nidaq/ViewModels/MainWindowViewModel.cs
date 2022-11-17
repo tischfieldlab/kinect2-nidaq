@@ -47,10 +47,6 @@ namespace kinect2_nidaq.ViewModels
                 var recorder = new Recorder(recordingMode, TimeSpan.FromMinutes(this.Settings.RecordingDuration));
 
                 recorder.AddDevice(this.Kinect);
-
-                this.AnalogDAQ.Initialize();
-                recorder.AddDevice(this.AnalogDAQ);
-
                 recorder.AddWriter(new MetadataWriter(fileHelper.Metadata, this.Settings));
 
                 if (this.Settings.IsColorStreamEnabled)
@@ -65,6 +61,8 @@ namespace kinect2_nidaq.ViewModels
 
                 if (this.Settings.AnalogNIDAQ.IsEnabled)
                 {
+                    this.AnalogDAQ.Initialize();
+                    recorder.AddDevice(this.AnalogDAQ);
                     recorder.AddWriter(new AnalogDaqWriter(fileHelper.Nidaq, this.AnalogDAQ.AnalogStream));
                 }
 

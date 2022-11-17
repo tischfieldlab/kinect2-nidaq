@@ -145,7 +145,7 @@
                           Grid.Row="3"
                           Grid.Column="0"
                           Name="CheckNidaqStream"
-                          IsChecked="{Binding Path=AnalogDAQ.Settings.IsEnabled}">
+                          IsChecked="{Binding Path=Settings.AnalogNIDAQ.IsEnabled}">
                     <TextBlock Text="Nidaq Stream" />
                 </CheckBox>
                 <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" >

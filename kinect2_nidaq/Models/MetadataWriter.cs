@@ -20,6 +20,7 @@ namespace kinect2_nidaq.Models
         public MetadataWriter(string destPath, SettingsViewModel settings)
         {
             this._destPath = destPath;
+            this.settings = settings;
 
         }
 

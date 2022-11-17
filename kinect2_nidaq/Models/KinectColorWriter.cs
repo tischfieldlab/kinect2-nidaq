@@ -12,8 +12,6 @@ namespace kinect2_nidaq.Models
 {
     public class KinectColorWriter : IDataWriter
     {
-        private FileStream _colorTsFileStream;
-        private StreamWriter _colorTsStreamWriter;
         private BlockingCollection<ColorFrameEventArgs> _queue;
         private VideoFileWriter _colorVideoWriter;
         private TimeSpan _initialTimeSpan;
@@ -28,9 +26,6 @@ namespace kinect2_nidaq.Models
         {
             this._tsDestPath = tsDestPath;
             this._videoDestPath = videoDestPath;
-
-            this._colorTsFileStream = new FileStream(this._tsDestPath, FileMode.Append);
-            this._colorTsStreamWriter = new StreamWriter(this._colorTsFileStream);
 
             this._colorVideoWriter = new VideoFileWriter();
 
@@ -63,30 +58,42 @@ namespace kinect2_nidaq.Models
 
         private void ColorRunner()
         {
-            while (!this._queue.IsCompleted)
+            using (var colorTsFileStream = new FileStream(this._tsDestPath, FileMode.Append))
+            using (var colorTsStreamWriter = new StreamWriter(colorTsFileStream))
             {
-                ColorFrameEventArgs colorData = null;
-                while (this._queue.TryTake(out colorData, 100))
+                while (!this._queue.IsCompleted)
                 {
-                    if (true /*IsColorStreamEnabled && IsRecordingEnabled*/) // TODO: Not sure we need this check???
+                    ColorFrameEventArgs colorData = null;
+                    while (this._queue.TryTake(out colorData, 100))
                     {
-                        if (!this._colorVideoWriter.IsOpen)
+                        if (true /*IsColorStreamEnabled && IsRecordingEnabled*/) // TODO: Not sure we need this check???
                         {
-                            this._colorVideoWriter.Open(this._videoDestPath, 
-                                Constants.kDefaultFrameWidth,
-                                Constants.kDefaultFrameHeight,
-                                Constants.kFramesPerSecond,
-                                VideoCodec.Default,
-                                Properties.Settings.Default.BitRate);
+                            if (!this._colorVideoWriter.IsOpen)
+                            {
+                                this._colorVideoWriter.Open(this._videoDestPath,
+                                    Constants.kDefaultFrameWidth,
+                                    Constants.kDefaultFrameHeight,
+                                    new Accord.Math.Rational(Constants.kFramesPerSecond),
+                                    VideoCodec.Default,
+                                    Properties.Settings.Default.BitRate);
 
-                            this._initialTimeSpan = colorData.RelativeTime;
+                                this._initialTimeSpan = colorData.RelativeTime;
+                            }
+
+                            colorTsStreamWriter.WriteLine(String.Format("{0} {1}", colorData.RelativeTime.TotalMilliseconds, colorData.TimeStamp));
+
+                            // Writing with timestamps makes FFMPEG choke!!
+                            //this._colorVideoWriter.WriteVideoFrame(colorData.ToBitmap().ToSystemBitmap(), colorData.RelativeTime - this._initialTimeSpan);
+
+                            // Do it like this instead
+                            this._colorVideoWriter.WriteVideoFrame(colorData.ToBitmap().ToSystemBitmap());
                         }
-
-                        this._colorTsStreamWriter.WriteLine(String.Format("{0} {1}", colorData.RelativeTime.TotalMilliseconds, colorData.TimeStamp));
-                        this._colorVideoWriter.WriteVideoFrame(colorData.ToBitmap().ToSystemBitmap(), colorData.RelativeTime - this._initialTimeSpan);
                     }
                 }
             }
+            this._colorVideoWriter.Close();
+            this._colorVideoWriter.Dispose();
+            this._queue.Dispose();
         }
     }
 }

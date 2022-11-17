@@ -12,9 +12,9 @@ namespace kinect2_nidaq.ViewModels
     {
         public SettingsViewModel()
         {
-            this._sessionName = Properties.Settings.Default.SessionName;
-            this._subjectName = Properties.Settings.Default.SubjectName;
-            this._saveDirectory = Properties.Settings.Default.FolderName;
+            this.SessionName = Properties.Settings.Default.SessionName;
+            this.SubjectName = Properties.Settings.Default.SubjectName;
+            this.FolderName = Properties.Settings.Default.FolderName;
 
             this.PropertyChanged += SettingsViewModel_PropertyChanged;
             this.IsSettingsEnabled = true;

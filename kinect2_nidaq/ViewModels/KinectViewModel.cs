@@ -94,7 +94,6 @@ namespace kinect2_nidaq.ViewModels
                 if (this.ColorStream != null)
                 {
                     this.ColorStream.CompleteAdding();
-                    this.ColorStream.Dispose();
                     this.ColorStream = null;
                 }
 
@@ -106,7 +105,6 @@ namespace kinect2_nidaq.ViewModels
                 if (this.DepthStream != null)
                 {
                     this.DepthStream.CompleteAdding();
-                    this.DepthStream.Dispose();
                     this.DepthStream = null;
                 }
                 

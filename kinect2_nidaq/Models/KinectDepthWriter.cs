@@ -12,12 +12,6 @@ namespace kinect2_nidaq.Models
 {
     public class KinectDepthWriter : IDataWriter
     {
-        private FileStream _depthTsFileStream;
-        private StreamWriter _depthTsStreamWriter;
-
-        private FileStream _depthVideoFileStream;
-        private BinaryWriter _depthVideoStreamWriter;
-
         private BlockingCollection<DepthFrameEventArgs> _queue;
 
         private string _tsDestPath;
@@ -30,12 +24,6 @@ namespace kinect2_nidaq.Models
         {
             this._tsDestPath = tsDestPath;
             this._videoDestPath = videoDestPath;
-
-            this._depthTsFileStream = new FileStream(this._tsDestPath, FileMode.Append);
-            this._depthTsStreamWriter = new StreamWriter(this._depthTsFileStream);
-
-            this._depthVideoFileStream = new FileStream(this._videoDestPath, FileMode.Append);
-            this._depthVideoStreamWriter = new BinaryWriter(this._depthVideoFileStream);
 
             this._queue = queue;
         }
@@ -66,22 +54,29 @@ namespace kinect2_nidaq.Models
 
         private void DepthRunner()
         {
-            while (!this._queue.IsCompleted)
-            {
-                DepthFrameEventArgs depthData = null;
-                while (this._queue.TryTake(out depthData, 100))
-                {
+            using (var depthTsFileStream = new FileStream(this._tsDestPath, FileMode.Append))
+            using (var depthTsStreamWriter = new StreamWriter(depthTsFileStream))
 
-                    if (/*IsDepthStreamEnabled && IsRecordingEnabled*/true) // TODO: I think we do not need this anymore?
+            using (var depthVideoFileStream = new FileStream(this._videoDestPath, FileMode.Append))
+            using (var depthVideoStreamWriter = new BinaryWriter(depthVideoFileStream))
+            {
+                while (!this._queue.IsCompleted)
+                {
+                    DepthFrameEventArgs depthData = null;
+                    while (this._queue.TryTake(out depthData, 100))
                     {
-                        this._depthTsStreamWriter.WriteLine(String.Format("{0} {1}", depthData.RelativeTime.TotalMilliseconds, depthData.TimeStamp));
-                        foreach (ushort depthDatum in depthData.DepthData)
+                        if (/*IsDepthStreamEnabled && IsRecordingEnabled*/true) // TODO: I think we do not need this anymore?
                         {
-                            this._depthVideoStreamWriter.Write(depthDatum);
+                            depthTsStreamWriter.WriteLine(String.Format("{0} {1}", depthData.RelativeTime.TotalMilliseconds, depthData.TimeStamp));
+                            foreach (ushort depthDatum in depthData.DepthData)
+                            {
+                                depthVideoStreamWriter.Write(depthDatum);
+                            }
                         }
                     }
                 }
             }
+            this._queue.Dispose();
         }
     }
 }

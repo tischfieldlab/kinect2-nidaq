@@ -12,16 +12,14 @@ namespace kinect2_nidaq.Models
 {
     public class AnalogDaqWriter : IDataWriter
     {
-        private FileStream _fileStream;
-        private BinaryWriter _binaryWriter;
+        private string _destPath;
+
         private BlockingCollection<AnalogWaveform<double>[]> _queue;
         private Task _writingTask;
 
         public AnalogDaqWriter(string destPath, BlockingCollection<AnalogWaveform<double>[]> queue)
         {
-            this._fileStream = new FileStream(destPath, FileMode.Append);
-            this._binaryWriter = new BinaryWriter(this._fileStream);
-
+            this._destPath = destPath;
             this._queue = queue;
         }
 
@@ -51,49 +49,39 @@ namespace kinect2_nidaq.Models
 
         private void NidaqRunner()
         {
-            while (!this._queue.IsCompleted)
+            using (var fileStream = new FileStream(this._destPath, FileMode.Append))
+            using (var binaryWriter = new BinaryWriter(fileStream))
             {
-                AnalogWaveform<double>[] NIDatum = null;
-
-                while (this._queue.TryTake(out NIDatum, 100))
+                while (!this._queue.IsCompleted)
                 {
-
-                    int nsamples = NIDatum[0].SampleCount;
-                    int nchannels = NIDatum.Length;
-
-                    double[][] data = new double[nchannels][];
-
-                    // write out nidaq data, etc. etc.
-
-                    for (int i = 0; i < nchannels; i++)
+                    AnalogWaveform<double>[] NIDatum = null;
+                    while (this._queue.TryTake(out NIDatum, 100))
                     {
-                        double[] tmp = NIDatum[i].GetScaledData();
+                        int nsamples = NIDatum[0].SampleCount;
+                        int nchannels = NIDatum.Length;
 
-                        // do something with each datapoint and timestamp
-                        data[i] = new double[nsamples];
-                        data[i] = tmp;
-                    }
+                        double[][] data = new double[nchannels][];
 
-                    NationalInstruments.PrecisionDateTime[] timestamps = NIDatum[0].GetPrecisionTimeStamps();
-
-                    // now we can write out...             
-                    // check for multiple samples?
-
-                    for (int i = 0; i < nsamples; i++)
-                    {
-                        //string writestring = "";
-                        for (int ii = 0; ii < nchannels; ii++)
+                        // write out nidaq data, etc. etc.
+                        for (int i = 0; i < nchannels; i++)
                         {
-                            this._binaryWriter.Write(data[ii][i]);
-                            //writestring = String.Format("{0} {1}", writestring, data[ii][i]);
+                            data[i] = NIDatum[i].GetScaledData();
                         }
-                        /*NidaqStream.WriteLine(String.Format("{0} {1}",
-                            writestring,
-                            (double)timestamps[i].WholeSeconds + timestamps[i].FractionalSeconds));*/
-                        this._binaryWriter.Write((double)timestamps[i].WholeSeconds + timestamps[i].FractionalSeconds);
+
+                        NationalInstruments.PrecisionDateTime[] timestamps = NIDatum[0].GetPrecisionTimeStamps();
+
+                        for (int i = 0; i < nsamples; i++)
+                        {
+                            for (int ii = 0; ii < nchannels; ii++)
+                            {
+                                binaryWriter.Write(data[ii][i]);
+                            }
+                            binaryWriter.Write((double)timestamps[i].WholeSeconds + timestamps[i].FractionalSeconds);
+                        }
                     }
                 }
             }
+            this._queue.Dispose();
         }
     }
 }

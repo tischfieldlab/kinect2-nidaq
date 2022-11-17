@@ -57,11 +57,15 @@ namespace kinect2_nidaq.Models.Recording
             this._terminator.Stop();
             this.DisposeTerminator();
 
+            this._devices.ForEach((d) => d.Stop());
+            this._writers.ForEach((w) => w.Stop());
+
             Task lastTask = Task.Factory.StartNew(() => { /* empty task */});
             foreach (var task in this._afterCompleteTasks)
             {
-                lastTask.ContinueWith(antecedent => task(), TaskContinuationOptions.OnlyOnRanToCompletion);
+                lastTask = lastTask.ContinueWith(antecedent => task(), TaskContinuationOptions.OnlyOnRanToCompletion);
             }
+            lastTask.Wait();
         }
 
 
