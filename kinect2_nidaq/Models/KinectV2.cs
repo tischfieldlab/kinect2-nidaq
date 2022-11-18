@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace kinect2_nidaq.Models
@@ -72,9 +73,10 @@ namespace kinect2_nidaq.Models
             this._sensor = KinectSensor.GetDefault();
             if (this._sensor != null)
             {
-                this._sensor.Open();
-                sensorAvailable = this._sensor.IsAvailable;
-                this._sensor.Close();                
+                //this._sensor.Open();
+                //Thread.Sleep(100);
+                sensorAvailable = true; //this._sensor.IsAvailable;
+                //this._sensor.Close();                
             } 
 
             if (sensorAvailable)

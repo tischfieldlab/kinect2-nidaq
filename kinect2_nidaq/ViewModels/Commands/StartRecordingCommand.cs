@@ -18,6 +18,8 @@ namespace kinect2_nidaq.ViewModels.Commands
         {
             var cfg = this.ViewModel.Settings;
 
+            if (this.ViewModel.Recording.IsRecording)
+                return false;
 
             if (cfg.IsPreviewMode)
             {
@@ -35,7 +37,7 @@ namespace kinect2_nidaq.ViewModels.Commands
 
         public override void Execute(object parameter)
         {
-            this.ViewModel.StartRecording();
+            this.ViewModel.Recording.StartRecording();
         }
     }
 }

@@ -11,30 +11,24 @@
     <Grid Grid.Column="1" IsEnabled="{Binding Path=Settings.AnalogNIDAQ.IsEnabled}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
             <RowDefinition Height="40" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
             <RowDefinition Height="40" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
             <RowDefinition Height="40"/>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
             <RowDefinition Height="40" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="10" />
-            <RowDefinition Height="10" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
+
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="20" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <TextBlock Text="NI-DAQ" FontSize="15" HorizontalAlignment="Center" Grid.ColumnSpan="3" VerticalAlignment="Bottom" FontWeight="Black"/>
+        <TextBlock Text="NI Analog DAQ" FontSize="15" HorizontalAlignment="Center" Grid.ColumnSpan="3" VerticalAlignment="Bottom" FontWeight="Black"/>
         
         
         <TextBlock Text="Device" Grid.Row="1" TextAlignment="Center" VerticalAlignment="Bottom"/>
@@ -71,7 +65,7 @@
                  SelectionMode="Extended"
                  Grid.Row="2"
                  Grid.Column="2"
-                 Grid.RowSpan="10"
+                 Grid.RowSpan="8"
                  ItemsSource="{Binding Path=Settings.AnalogNIDAQ.AvailableChannels}"
                  >
             <!--SelectedItem="{Binding Path=Settings.AnalogNIDAQ.SelectedChannels}"-->

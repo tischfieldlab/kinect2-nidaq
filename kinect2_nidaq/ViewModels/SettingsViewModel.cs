@@ -1,4 +1,5 @@
 ﻿using kinect2_nidaq.ViewModels.AnalogDAQ;
+using kinect2_nidaq.ViewModels.DigitalDAQ;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -117,6 +118,8 @@ namespace kinect2_nidaq.ViewModels
 
 
         public AnalogNIDAQSettingsViewModel AnalogNIDAQ { get; set; }
+
+        public DigitalNIDAQSettingsViewModel DigitalNIDAQ { get; set; }
 
 
         public void ActivateSettings()

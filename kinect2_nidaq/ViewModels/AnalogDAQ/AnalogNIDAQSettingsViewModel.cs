@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace kinect2_nidaq.ViewModels.AnalogDAQ
 {
@@ -29,7 +30,24 @@ namespace kinect2_nidaq.ViewModels.AnalogDAQ
         public bool IsEnabled
         {
             get => this._isEnabled;
-            set => this.SetField(ref this._isEnabled, value);
+            set
+            {
+                if (value)
+                {
+                    // need to ensure a device is available
+                    this.PopulateDevices(); // re-query just in case user recently connected a device
+                    if (this.AvailableDevices.Count <= 0)
+                    {
+                        MessageBox.Show("A suitable NI device was not detected.\nPlease connect a device and try again.", 
+                                        "Device not found!",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Exclamation);
+                        this.SetField(ref this._isEnabled, false);
+                        return;
+                    }
+                }
+                this.SetField(ref this._isEnabled, value);
+            }
         }
         protected bool _isEnabled;
 
@@ -133,8 +151,15 @@ namespace kinect2_nidaq.ViewModels.AnalogDAQ
             this.AvailableDevices.Clear();
             foreach (var device in DaqSystem.Local.Devices)
             {
-                // TODO: Probably we should filter to only devices that support this type of task!
-                this.AvailableDevices.Add(device);
+                // Load and check the device capabilities to see if it is a
+                // suitable device for this task
+                var loadedDevice = DaqSystem.Local.LoadDevice(device);
+
+                // Seems checking the number of physical analog in channels is a good heuristic
+                if (loadedDevice.AIPhysicalChannels.Length > 0)
+                {
+                    this.AvailableDevices.Add(device);
+                }
             }
         }
     }

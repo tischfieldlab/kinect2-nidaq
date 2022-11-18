@@ -36,15 +36,5 @@ namespace kinect2_nidaq.Views
                 (this.DataContext as MainWindowViewModel).Settings.FolderName = dialog.FileName;
             }
         }
-
-        private void StartButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void StopButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

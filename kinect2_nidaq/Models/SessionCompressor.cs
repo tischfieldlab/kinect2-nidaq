@@ -15,9 +15,9 @@ namespace kinect2_nidaq.Models
         public double ElapsedSeconds { get; set; }
         public long TotalBytes { get; set; }
         public long WrittenBytes { get; set; }
-        public double Progress { get => this.WrittenBytes / this.TotalBytes; }
+        public double Progress { get => ((double)this.WrittenBytes / (double)this.TotalBytes); }
         public double ProgressRate { get => (this.ElapsedSeconds / this.Progress); }
-        public double InstantaneousETA { get => (1 - this.Progress) * this.ProgressRate; }
+        public double InstantaneousETA { get => (1.0 - this.Progress) * this.ProgressRate; }
         public double SmoothedETA { get; set; }
     }
     public class SessionCompressor

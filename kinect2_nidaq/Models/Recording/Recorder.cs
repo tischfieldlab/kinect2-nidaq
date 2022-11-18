@@ -13,7 +13,7 @@ namespace kinect2_nidaq.Models.Recording
         Indeterminate,
         Timed
     }
-    class Recorder : ObservableObject
+    public class Recorder : ObservableObject
     {
         protected RecordingMode _mode;
         protected TimeSpan _recordingLength;
@@ -21,6 +21,11 @@ namespace kinect2_nidaq.Models.Recording
         protected List<IDataWriter> _writers;
         protected List<IDeviceViewModel> _devices;
         protected List<Action> _afterCompleteTasks;
+
+        public event EventHandler BeforeStartRecording; // fires before recording has started 
+        public event EventHandler RecordingStarted;     // fires once recording has commenced
+        public event EventHandler BeforeRecordingEnd;   // fires before recording is about to end (finish or abort)
+        public event EventHandler RecordingFinished;    // fires once recording has finished
 
         public Recorder(RecordingMode mode, TimeSpan duration)
         {
@@ -31,6 +36,10 @@ namespace kinect2_nidaq.Models.Recording
             this._devices = new List<IDeviceViewModel>();
             this._afterCompleteTasks = new List<Action>();
         }
+
+        public TimeSpan Duration { get => this._terminator.Duration; }
+        public double? Progress { get => this._terminator.Progress; }
+        public TimeSpan? TimeRemaining { get => this._terminator.TimeRemaining; }
 
         public void AddWriter(IDataWriter writer)
         {
@@ -47,25 +56,33 @@ namespace kinect2_nidaq.Models.Recording
 
         public void Start()
         {
+            this.BeforeStartRecording?.Invoke(this, new EventArgs());
             this._writers.ForEach((w) => w.Start());
             this._devices.ForEach((d) => d.Start());
             this.TerminatorFactory().Start();
+            this.RecordingStarted?.Invoke(this, new EventArgs());
         }
 
         public void Stop()
         {
-            this._terminator.Stop();
-            this.DisposeTerminator();
-
-            this._devices.ForEach((d) => d.Stop());
-            this._writers.ForEach((w) => w.Stop());
-
-            Task lastTask = Task.Factory.StartNew(() => { /* empty task */});
-            foreach (var task in this._afterCompleteTasks)
+            if (this._terminator != null)
             {
-                lastTask = lastTask.ContinueWith(antecedent => task(), TaskContinuationOptions.OnlyOnRanToCompletion);
+                this.BeforeRecordingEnd?.Invoke(this, new EventArgs());
+
+                this._terminator.Stop();
+                this.DisposeTerminator();
+
+                this._devices.ForEach((d) => d.Stop());
+                this._writers.ForEach((w) => w.Stop());
+
+                Task lastTask = Task.Factory.StartNew(() => { /* empty task */});
+                foreach (var task in this._afterCompleteTasks)
+                {
+                    lastTask = lastTask.ContinueWith(antecedent => task(), TaskContinuationOptions.OnlyOnRanToCompletion);
+                }
+                lastTask.Wait();
+                this.RecordingFinished?.Invoke(this, new EventArgs());
             }
-            lastTask.Wait();
         }
 
 

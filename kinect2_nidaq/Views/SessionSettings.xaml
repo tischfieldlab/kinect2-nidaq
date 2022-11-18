@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:kinect2_nidaq.Views"
              xmlns:properties="clr-namespace:kinect2_nidaq.Properties"
              xmlns:conv="clr-namespace:kinect2_nidaq.Views.Converters"
+             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -20,7 +21,22 @@
             <ColumnDefinition Width="20" />
         </Grid.ColumnDefinitions>
         <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="5" Background="Gray"/>
-        <local:NIAnalogDAQ Grid.Column="1" />
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="150" />
+            </Grid.RowDefinitions>
+
+            <local:NIAnalogDAQ Grid.Row="0" />
+
+            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="5" Background="Gray"/>
+
+            <local:NIDigitalDAQ Grid.Row="2" />
+
+        </Grid>
+        
 
 
 
@@ -161,13 +177,13 @@
                             Height="35"
                             Background="LightGreen"/>
                     
-                    <Button Content="Stop Session"
+                    <local:ResetIsEnabled Grid.Column="2">
+                        <Button Content="Stop Session"
                             Name="StopButton"
-                            Click="StopButton_Click"
-                            IsEnabled="False"
-                            Grid.Column="2"
+                            Command="{Binding Path=StopRecordingCommand}"
                             Height="35"
                             Background="LightSalmon" />
+                    </local:ResetIsEnabled>
                 </Grid>
             </Grid>
 

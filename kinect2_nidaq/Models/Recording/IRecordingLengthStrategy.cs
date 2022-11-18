@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace kinect2_nidaq.Models.Recording
 {
-    interface IRecordingLengthStrategy : INotifyPropertyChanged
+    public interface IRecordingLengthStrategy : INotifyPropertyChanged
     {
         event EventHandler TriggerStop;
 

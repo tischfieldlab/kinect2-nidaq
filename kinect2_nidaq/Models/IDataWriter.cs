@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace kinect2_nidaq.Models
 {
-    interface IDataWriter
+    public interface IDataWriter
     {
         void Start();
         void Stop();

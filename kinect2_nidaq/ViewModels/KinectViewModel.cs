@@ -29,6 +29,9 @@ namespace kinect2_nidaq.ViewModels
         private ushort _depthMinDisplay;
         private ushort _depthMaxDisplay;
 
+        public event EventHandler<ColorFrameEventArgs> ColorFrameProduced;
+        public event EventHandler<DepthFrameEventArgs> DepthFrameProduced;
+
 
         public KinectViewModel(SettingsViewModel settings)
         {
@@ -178,6 +181,7 @@ namespace kinect2_nidaq.ViewModels
 
         private void _sensor_DepthFrameProduced(object sender, DepthFrameEventArgs e)
         {
+            this.DepthFrameProduced?.Invoke(this, e);
             this.LastDepthFrame = e;
             if (this.DepthStream != null)
                 this.DepthStream.Add(e);
@@ -190,6 +194,7 @@ namespace kinect2_nidaq.ViewModels
 
         private void _sensor_ColorFrameProduced(object sender, ColorFrameEventArgs e)
         {
+            this.ColorFrameProduced?.Invoke(this, e);
             this.LastColorFrame = e;
             if (this.ColorStream != null)
                 this.ColorStream.Add(e);

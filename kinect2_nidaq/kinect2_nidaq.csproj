@@ -169,6 +169,7 @@
     </Compile>
     <Compile Include="Metadata\MetaData.cs" />
     <Compile Include="Models\FilePathHelper.cs" />
+    <Compile Include="Models\FileRelocator.cs" />
     <Compile Include="Models\IDataWriter.cs" />
     <Compile Include="Models\IKinectDevice.cs" />
     <Compile Include="Models\KinectV2.cs" />
@@ -186,11 +187,19 @@
     <Compile Include="ViewModels\AnalogDAQ\AnalogNIDAQSettingsViewModel.cs" />
     <Compile Include="ViewModels\AnalogDAQ\AnalogNIDAQViewModel.cs" />
     <Compile Include="ViewModels\Commands\BaseCommand.cs" />
+    <Compile Include="ViewModels\Commands\StopRecordingCommand.cs" />
     <Compile Include="ViewModels\Commands\StartRecordingCommand.cs" />
     <Compile Include="Models\KinectDepthWriter.cs" />
     <Compile Include="Models\KinectColorWriter.cs" />
+    <Compile Include="ViewModels\DigitalDAQ\DigitalNIDAQViewModel.cs" />
+    <Compile Include="ViewModels\DigitalDAQ\DigitalNIDAQSettingsViewModel.cs" />
+    <Compile Include="ViewModels\DigitalDAQ\DigitalTtlListner.cs" />
+    <Compile Include="ViewModels\DigitalDAQ\DigitalTtlSender.cs" />
     <Compile Include="ViewModels\IDeviceViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="Views\Converters\NullableDoubleToDoubleConverter.cs" />
+    <Compile Include="Views\Converters\IsNullToBooleanConverter.cs" />
+    <Compile Include="Views\Converters\BooleanToRedGreenBrushConverter.cs" />
     <Compile Include="Views\Converters\BooleanInvertConverter.cs" />
     <Compile Include="Views\Converters\DepthFrameConverter.cs" />
     <Compile Include="Views\Converters\ColorFrameConverter.cs" />
@@ -199,9 +208,13 @@
     <Compile Include="ViewModels\ObservableObject.cs" />
     <Compile Include="ViewModels\PerformanceViewModel.cs" />
     <Compile Include="ViewModels\RecordingViewModel.cs" />
+    <Compile Include="Views\NIDigitalDAQ.xaml.cs">
+      <DependentUpon>NIDigitalDAQ.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\NIAnalogDAQ.xaml.cs">
       <DependentUpon>NIAnalogDAQ.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ResetIsEnabled.cs" />
     <Compile Include="Views\SessionSettings.xaml.cs">
       <DependentUpon>SessionSettings.xaml</DependentUpon>
     </Compile>
@@ -227,6 +240,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\NIDigitalDAQ.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\NIAnalogDAQ.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -296,32 +313,32 @@
   <ItemGroup>
     <PublishFile Include="Microsoft.Kinect">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="NationalInstruments.MStudioCLM">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="NationalInstruments.NiLmClientDLL">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
   </ItemGroup>
