@@ -48,7 +48,6 @@ namespace kinect2_nidaq.ViewModels.DigitalDAQ
                             this.TTLRecieved?.Invoke(this, new EventArgs());
                         }
                         lastState = currState;
-
                     }
                     readTask.Stop();
                 }

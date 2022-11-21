@@ -1,6 +1,4 @@
 ﻿using kinect2_nidaq.Properties;
-using NationalInstruments;
-using NationalInstruments.DAQmx;
 using Sensor;
 using System;
 using System.Collections.Concurrent;
@@ -9,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace kinect2_nidaq.ViewModels.DigitalDAQ
 {
@@ -66,7 +65,21 @@ namespace kinect2_nidaq.ViewModels.DigitalDAQ
 
         private void TtlListner_TTLRecieved(object sender, EventArgs e)
         {
-            this.viewModel.Recording.StartRecording();
+            try
+            {
+                this.viewModel.StartRecordingCommand.Execute(null);
+            }
+            catch
+            {
+                Task.Run(() =>
+                {
+                    MessageBox.Show("Recieved a TTL signal to start recording, but a recording was already in progress!",
+                                    "Recording in progress",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Exclamation);
+                });
+            }
+            
         }
 
         private void Kinect_DepthFrameProduced(object sender, DepthFrameEventArgs e)
