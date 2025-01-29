@@ -21,26 +21,29 @@
         </Grid.ColumnDefinitions>
         <TextBlock Text="NI Digital DAQ" FontSize="15" HorizontalAlignment="Center" Grid.ColumnSpan="3" VerticalAlignment="Bottom" FontWeight="Black"/>
 
-        <CheckBox Grid.Row="2" IsChecked="{Binding Path=Settings.DigitalNIDAQ.IsRecieveStartRecordingTTLEnabled}">
-            <WrapPanel>
+        <WrapPanel Grid.Row="2">
+            <CheckBox IsChecked="{Binding Path=Settings.DigitalNIDAQ.IsRecieveStartRecordingTTLEnabled}">
                 <TextBlock Text="Start Recording on TTL signal" Width="170" />
-                <ComboBox IsEnabled="{Binding Path=Settings.DigitalNIDAQ.IsRecieveStartRecordingTTLEnabled}"
-                          ItemsSource="{Binding Path=Settings.DigitalNIDAQ.AvailableDevices}"
-                          SelectedItem="{Binding Path=Settings.DigitalNIDAQ.RecieveStartRecordingTTLDevice}"
-                          MinWidth="120"
-                          Margin="8,0,0,0" />
-            </WrapPanel>
-        </CheckBox>
+            </CheckBox>
+            <ComboBox IsEnabled="{Binding Path=Settings.DigitalNIDAQ.IsRecieveStartRecordingTTLEnabled}"
+                      ItemsSource="{Binding Path=Settings.DigitalNIDAQ.AvailableDevices}"
+                      SelectedItem="{Binding Path=Settings.DigitalNIDAQ.RecieveStartRecordingTTLDevice}"
+                      MinWidth="120"
+                      Margin="8,0,0,0" />
+        </WrapPanel>
 
-        <CheckBox Grid.Row="4" IsChecked="{Binding Path=Settings.DigitalNIDAQ.IsSendDepthCaptureTTLEnabled}">
-            <WrapPanel>
+
+        <WrapPanel Grid.Row="4">
+            <CheckBox IsChecked="{Binding Path=Settings.DigitalNIDAQ.IsSendDepthCaptureTTLEnabled}">
+            
                 <TextBlock Text="Send TTL on Depth Capture" Width="170" />
-                <ComboBox IsEnabled="{Binding Path=Settings.DigitalNIDAQ.IsSendDepthCaptureTTLEnabled}"
-                          ItemsSource="{Binding Path=Settings.DigitalNIDAQ.AvailableDevices}"
-                          SelectedItem="{Binding Path=Settings.DigitalNIDAQ.SendDepthCaptureTTLDevice}"
-                          MinWidth="120"
-                          Margin="8,0,0,0" />
-            </WrapPanel>
-        </CheckBox>
+            </CheckBox>
+            <ComboBox IsEnabled="{Binding Path=Settings.DigitalNIDAQ.IsSendDepthCaptureTTLEnabled}"
+                      ItemsSource="{Binding Path=Settings.DigitalNIDAQ.AvailableDevices}"
+                      SelectedItem="{Binding Path=Settings.DigitalNIDAQ.SendDepthCaptureTTLDevice}"
+                      MinWidth="120"
+                      Margin="8,0,0,0" />
+        </WrapPanel>
+        
     </Grid>
 </UserControl>
