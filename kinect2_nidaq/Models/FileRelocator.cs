@@ -19,17 +19,21 @@ namespace kinect2_nidaq.Models
         public void RelocateFiles()
         {
             Console.WriteLine("Relocating acquisition files...");
+
+            Console.WriteLine(String.Format(" -> Creating destination directory: \"{0}\"", this.filePaths.MoveFolder));
+            Directory.CreateDirectory(this.filePaths.MoveFolder);
+
             foreach (string[] FileName in this.filePaths.FileToTarMemberMapping)
             {
                 if (File.Exists(FileName[0]))
                 {
                     var newDest = Path.Combine(this.filePaths.MoveFolder, FileName[1]);
-                    Console.WriteLine(String.Format("Moving {0} to {1}", FileName[0], newDest));
+                    Console.WriteLine(String.Format(" -> Moving {0} to {1}", FileName[0], newDest));
                     File.Move(FileName[0], newDest);
                 }
                 else
                 {
-                    Console.WriteLine(String.Format("Skipping {0}, since it seems to not exist!", FileName[0]));
+                    Console.WriteLine(String.Format(" -> Skipping {0}, since it seems to not exist!", FileName[0]));
                 }
             }
         }
