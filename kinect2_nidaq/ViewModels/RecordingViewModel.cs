@@ -140,7 +140,7 @@ namespace kinect2_nidaq.ViewModels
             this.Performance.Progress = recorder.Progress;
             if (recorder.TimeRemaining.HasValue)
             {
-                this.Performance.ProgressETA = String.Format("ETA: ({0} mins, {1:F2} secs)", recorder.TimeRemaining.Value.Minutes, recorder.TimeRemaining.Value.Seconds);
+                this.Performance.ProgressETA = String.Format("ETA: ({0} mins, {1:F0} secs)", recorder.TimeRemaining.Value.Minutes, recorder.TimeRemaining.Value.Seconds);
             }
             else
             {
@@ -160,7 +160,7 @@ namespace kinect2_nidaq.ViewModels
         private void Compressor_Progress(object sender, CompressionProgressEventArgs e)
         {
             this.Performance.ApplicationStatus = "Compressing";
-            this.Performance.ProgressETA = String.Format("ETA: ({0} mins, {1:F2} secs)", Math.Floor(e.SmoothedETA / 60), e.SmoothedETA % 60);
+            this.Performance.ProgressETA = String.Format("ETA: ({0} mins, {1:F0} secs)", Math.Floor(e.SmoothedETA / 60), e.SmoothedETA % 60);
             this.Performance.Progress = e.Progress;
         }
 
