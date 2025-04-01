@@ -45,16 +45,26 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="Color" Grid.Row="0" Grid.Column="0" FontSize="11" />
-                <TextBlock Text="Depth" Grid.Row="1" Grid.Column="0" FontSize="11" />
-                <TextBlock Text="Nidaq" Grid.Row="2" Grid.Column="0" FontSize="11" />
-                <Rectangle Width="15" Name="ColorLight" Height="10" Grid.Row="0" Grid.Column="1" Fill="{Binding Path=Performance.IsColorAcquisitionActive, Converter={StaticResource BooleanToRedGreenBrushConverter}}" />
-                <Rectangle Width="15" Name="DepthLight" Height="10" Grid.Row="1" Grid.Column="1" Fill="{Binding Path=Performance.IsDepthAcquisitionActive, Converter={StaticResource BooleanToRedGreenBrushConverter}}" />
-                <Rectangle Width="15" Name="NidaqLight" Height="10" Grid.Row="2" Grid.Column="1" Fill="{Binding Path=Performance.IsNidaqAcquisitionActive, Converter={StaticResource BooleanToRedGreenBrushConverter}}" />
+                <TextBlock Text="Color" Grid.Row="0" Grid.Column="0" FontSize="11" VerticalAlignment="Center" />
+                <TextBlock Text="Depth" Grid.Row="1" Grid.Column="0" FontSize="11" VerticalAlignment="Center" />
+                <TextBlock Text="IR" Grid.Row="2" Grid.Column="0" FontSize="11" VerticalAlignment="Center" />
+                <TextBlock Text="Nidaq" Grid.Row="3" Grid.Column="0" FontSize="11" VerticalAlignment="Center" />
+                <Border Width="15" Name="ColorLight" Height="10" Grid.Row="0" Grid.Column="1" Background="{Binding Path=Performance.IsColorAcquisitionActive, Converter={StaticResource BooleanToRedGreenBrushConverter}}">
+                    <TextBlock Text="{Binding Path=Kinect.ColorFPS}" FontSize="8" HorizontalAlignment="Center" />
+                </Border>
+                <Border Width="15" Name="DepthLight" Height="10" Grid.Row="1" Grid.Column="1" Background="{Binding Path=Performance.IsDepthAcquisitionActive, Converter={StaticResource BooleanToRedGreenBrushConverter}}">
+                    <TextBlock Text="{Binding Path=Kinect.DepthFPS}" FontSize="8" HorizontalAlignment="Center" />
+                </Border>
+                <Border Width="15" Name="IRLight" Height="10" Grid.Row="2" Grid.Column="1" Background="{Binding Path=Performance.IsIRAcquisitionActive, Converter={StaticResource BooleanToRedGreenBrushConverter}}">
+                    <TextBlock Text="{Binding Path=Kinect.IRFPS}" FontSize="8" HorizontalAlignment="Center" />
+                </Border>
+                <Rectangle Width="15" Name="NidaqLight" Height="10" Grid.Row="3" Grid.Column="1" Fill="{Binding Path=Performance.IsNidaqAcquisitionActive, Converter={StaticResource BooleanToRedGreenBrushConverter}}" />
                 <ProgressBar Value="{Binding Path=Performance.ColorFrameQueueUtilization}" Minimum="0" Maximum="1" Width="100" Height="10" Grid.Row="0" Grid.Column="2" />
                 <ProgressBar Value="{Binding Path=Performance.DepthFrameQueueUtilization}" Minimum="0" Maximum="1" Width="100" Height="10" Grid.Row="1" Grid.Column="2" />
-                <ProgressBar Value="{Binding Path=Performance.NidaqFrameQueueUtilization}" Minimum="0" Maximum="1" Width="100" Height="10" Grid.Row="2" Grid.Column="2" />
+                <ProgressBar Value="{Binding Path=Performance.IRFrameQueueUtilization}" Minimum="0" Maximum="1" Width="100" Height="10" Grid.Row="2" Grid.Column="2" />
+                <ProgressBar Value="{Binding Path=Performance.NidaqFrameQueueUtilization}" Minimum="0" Maximum="1" Width="100" Height="10" Grid.Row="3" Grid.Column="2" />
             </Grid>
         </StatusBarItem>
         <Separator Grid.Column="1" />
@@ -94,6 +104,7 @@
                 <StackPanel Orientation="Horizontal" Grid.Row="1">
                     <TextBlock Text="{Binding Path=Kinect.ColorFramesDropped, StringFormat={}Color: {0}}" />
                     <TextBlock Text="{Binding Path=Kinect.DepthFramesDropped, StringFormat={}Depth: {0}}" Margin="6,0,0,0" />
+                    <TextBlock Text="{Binding Path=Kinect.IRFramesDropped, StringFormat={}IR: {0}}" Margin="6,0,0,0" />
                 </StackPanel>
                 <TextBlock Name="StatusBarFramesDropped"   />
             </Grid>

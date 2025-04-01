@@ -126,7 +126,7 @@
             <Slider Name="DepthMaxSlider"
                     Grid.Row="1"
                     Grid.Column="3"
-                    Maximum="1000"
+                    Maximum="2000"
                     Minimum="0" 
                     IsSnapToTickEnabled="False"
                     TickFrequency="100"

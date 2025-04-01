@@ -21,7 +21,7 @@ namespace kinect2_nidaq.Models
         public string ColorTS { get => Path.Combine(this.SaveFolder, String.Format("rgb_ts_{0}.txt", this.Moniker)); }
         public string ColorVid { get => Path.Combine(this.SaveFolder, String.Format("rgb_{0}.mp4", this.Moniker)); }
         public string DepthTS { get => Path.Combine(this.SaveFolder, String.Format("depth_ts_{0}.txt", this.Moniker)); }
-        public string DepthVid { get => Path.Combine(this.SaveFolder, String.Format("depth_{0}.dat", this.Moniker)); }
+        public string DepthVid { get => Path.Combine(this.SaveFolder, String.Format("depth_{0}.avi", this.Moniker)); }
         public string IRTS { get => Path.Combine(this.SaveFolder, String.Format("ir_ts_{0}.txt", this.Moniker)); }
         public string IRVid { get => Path.Combine(this.SaveFolder, String.Format("ir_{0}.avi", this.Moniker)); }
         public string Nidaq { get => Path.Combine(this.SaveFolder, String.Format("nidaq_{0}.dat", this.Moniker)); }
@@ -38,7 +38,7 @@ namespace kinect2_nidaq.Models
                     new string[] { this.ColorTS, "rgb_ts.txt" },
                     new string[] { this.ColorVid, "rgb.mp4" },
                     new string[] { this.DepthTS, "depth_ts.txt" },
-                    new string[] { this.DepthVid, "depth.dat" },
+                    new string[] { this.DepthVid, "depth.avi" },
                     new string[] { this.IRTS, "ir_ts.txt" },
                     new string[] { this.IRVid, "ir.avi" },
                     new string[] { this.Metadata, "metadata.json" },

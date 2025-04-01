@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace kinect2_nidaq.Models
 {
-    public class KinectDepthWriter : IDataWriter
+    public class KinectDepthDatWriter : IDataWriter
     {
         private BlockingCollection<DepthFrameEventArgs> _queue;
 
@@ -20,7 +20,7 @@ namespace kinect2_nidaq.Models
         private Task _writingTask;
 
 
-        public KinectDepthWriter(string tsDestPath, string videoDestPath, BlockingCollection<DepthFrameEventArgs> queue)
+        public KinectDepthDatWriter(string tsDestPath, string videoDestPath, BlockingCollection<DepthFrameEventArgs> queue)
         {
             this._tsDestPath = tsDestPath;
             this._videoDestPath = videoDestPath;

@@ -66,7 +66,7 @@ namespace kinect2_nidaq.ViewModels
                 if (this.Settings.IsDepthStreamEnabled)
                 {
                     this.Performance.IsDepthAcquisitionActive = true;
-                    this.recorder.AddWriter(new KinectDepthWriter(fileHelper.DepthTS, fileHelper.DepthVid, this.Kinect.DepthStream));
+                    this.recorder.AddWriter(new KinectDepthFFV1Writer(this.Kinect.DepthInfo, fileHelper.DepthTS, fileHelper.DepthVid, this.Kinect.DepthStream));
                 }
 
                 if (this.Settings.IsIRStreamEnabled)

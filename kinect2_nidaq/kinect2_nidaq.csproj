@@ -187,10 +187,12 @@
     <Compile Include="Metadata\MetaData.cs" />
     <Compile Include="Models\FilePathHelper.cs" />
     <Compile Include="Models\FileRelocator.cs" />
+    <Compile Include="Models\FPSMonitor.cs" />
     <Compile Include="Models\IDataWriter.cs" />
     <Compile Include="Models\IKinectDevice.cs" />
     <Compile Include="Models\KinectAzure.cs" />
     <Compile Include="Models\KinectIRWriter.cs" />
+    <Compile Include="Models\KinectDepthFFV1Writer.cs" />
     <Compile Include="Models\KinectV2.cs" />
     <Compile Include="Models\MetadataWriter.cs" />
     <Compile Include="Models\Recording\Recorder.cs" />
@@ -208,7 +210,7 @@
     <Compile Include="ViewModels\Commands\BaseCommand.cs" />
     <Compile Include="ViewModels\Commands\StopRecordingCommand.cs" />
     <Compile Include="ViewModels\Commands\StartRecordingCommand.cs" />
-    <Compile Include="Models\KinectDepthWriter.cs" />
+    <Compile Include="Models\KinectDepthDatWriter.cs" />
     <Compile Include="Models\KinectColorWriter.cs" />
     <Compile Include="ViewModels\DigitalDAQ\DigitalNIDAQViewModel.cs" />
     <Compile Include="ViewModels\DigitalDAQ\DigitalNIDAQSettingsViewModel.cs" />

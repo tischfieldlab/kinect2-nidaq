@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -21,12 +22,18 @@ namespace kinect2_nidaq.ViewModels
 
         private int _colorFramesDropped;
         private ColorFrameEventArgs _lastColorFrame;
+        private FPSMonitor _colorFPSMonitor;
+        private double _colorFPS;
 
         private int _depthFramesDropped;
         private DepthFrameEventArgs _lastDepthFrame;
+        private FPSMonitor _depthFPSMonitor;
+        private double _depthFPS;
 
         private int _irFramesDropped;
         private IRFrameEventArgs _lastIRFrame;
+        private FPSMonitor _irFPSMonitor;
+        private double _irFPS;
 
         private bool _flipFrameDisplay;
         private ushort _depthMinDisplay;
@@ -91,6 +98,7 @@ namespace kinect2_nidaq.ViewModels
                     this.ColorStream = new BlockingCollection<ColorFrameEventArgs>(Constants.kMaxFrames);
                 this._sensor.ColorFrameDropped += this._sensor_ColorFrameDropped;
                 this._sensor.ColorFrameProduced += this._sensor_ColorFrameProduced;
+                this._colorFPSMonitor = new FPSMonitor();
             }
 
             if (this.settings.IsDepthStreamEnabled)
@@ -99,6 +107,7 @@ namespace kinect2_nidaq.ViewModels
                     this.DepthStream = new BlockingCollection<DepthFrameEventArgs>(Constants.kMaxFrames);
                 this._sensor.DepthFrameDropped += this._sensor_DepthFrameDropped;
                 this._sensor.DepthFrameProduced += this._sensor_DepthFrameProduced;
+                this._depthFPSMonitor = new FPSMonitor();
             }
 
             if (this.settings.IsIRStreamEnabled)
@@ -107,6 +116,7 @@ namespace kinect2_nidaq.ViewModels
                     this.IRStream = new BlockingCollection<IRFrameEventArgs>(Constants.kMaxFrames);
                 this._sensor.IRFrameDropped += this._sensor_IRFrameDropped;
                 this._sensor.IRFrameProduced += this._sensor_IRFrameProduced;
+                this._irFPSMonitor = new FPSMonitor();
             }
             this._isInitialized = true;
         }
@@ -118,6 +128,7 @@ namespace kinect2_nidaq.ViewModels
                 throw new ApplicationException("You must call Initialize() before calling Start()!");
 
             this._sensor.Start();
+            this.WatchFPS();
         }
 
         public void Stop()
@@ -158,9 +169,18 @@ namespace kinect2_nidaq.ViewModels
                 this._sensor.IRFrameDropped -= this._sensor_IRFrameDropped;
                 this._sensor.IRFrameProduced -= this._sensor_IRFrameProduced;
             }
+
+            this.ColorFPS = 0;
+            this.DepthFPS = 0;
+            this.IRFPS = 0;
         }
 
         public BlockingCollection<ColorFrameEventArgs> ColorStream { get; private set; }
+        public double ColorFPS
+        {
+            get => this._colorFPS;
+            private set => this.SetField(ref this._colorFPS, value);
+        }
         public int ColorFramesDropped
         {
             get => this._colorFramesDropped;
@@ -184,6 +204,11 @@ namespace kinect2_nidaq.ViewModels
 
 
         public BlockingCollection<DepthFrameEventArgs> DepthStream { get; private set; }
+        public double DepthFPS
+        {
+            get => this._depthFPS;
+            private set => this.SetField(ref this._depthFPS, value);
+        }
         public int DepthFramesDropped
         {
             get => this._depthFramesDropped;
@@ -207,6 +232,11 @@ namespace kinect2_nidaq.ViewModels
 
 
         public BlockingCollection<IRFrameEventArgs> IRStream { get; private set; }
+        public double IRFPS
+        {
+            get => this._irFPS;
+            private set => this.SetField(ref this._irFPS, value);
+        }
         public int IRFramesDropped
         {
             get => this._irFramesDropped;
@@ -251,7 +281,11 @@ namespace kinect2_nidaq.ViewModels
             this.DepthFrameProduced?.Invoke(this, e);
             this.LastDepthFrame = e;
             if (this.DepthStream != null)
+            {
                 this.DepthStream.Add(e);
+                
+            }
+            this._depthFPSMonitor.add_sample(e.RelativeTime.TotalSeconds);
         }
 
         private void _sensor_DepthFrameDropped(object sender, EventArgs e)
@@ -264,7 +298,10 @@ namespace kinect2_nidaq.ViewModels
             this.IRFrameProduced?.Invoke(this, e);
             this.LastIRFrame = e;
             if (this.IRStream != null)
+            {
                 this.IRStream.Add(e);
+            }
+            this._irFPSMonitor.add_sample(e.RelativeTime.TotalSeconds);
         }
 
         private void _sensor_IRFrameDropped(object sender, EventArgs e)
@@ -277,12 +314,33 @@ namespace kinect2_nidaq.ViewModels
             this.ColorFrameProduced?.Invoke(this, e);
             this.LastColorFrame = e;
             if (this.ColorStream != null)
+            {
                 this.ColorStream.Add(e);
+            }
+            this._colorFPSMonitor.add_sample(e.RelativeTime.TotalSeconds);
         }
 
         private void _sensor_ColorFrameDropped(object sender, EventArgs e)
         {
             this.ColorFramesDropped++;
+        }
+
+        private void WatchFPS()
+        {
+            Task.Run(() =>
+            {
+                while (this._isInitialized)
+                {
+                    if (this._sensor.IsColorStreamEnabled)
+                        this.ColorFPS = this._colorFPSMonitor.calc_fps();
+                    if (this._sensor.IsDepthStreamEnabled)
+                        this.DepthFPS = this._depthFPSMonitor.calc_fps();
+                    if (this._sensor.IsIRStreamEnabled)
+                        this.IRFPS = this._irFPSMonitor.calc_fps();
+
+                    Thread.Sleep(500);
+                }
+            });
         }
     }
 }
