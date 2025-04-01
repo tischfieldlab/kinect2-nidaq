@@ -26,14 +26,41 @@ namespace kinect2_nidaq.Models
 
         public KinectV2()
         {
-            this._colorData = new byte[Constants.kDefaultColorFrameHeight * Constants.kDefaultColorFrameWidth * Constants.kBytesPerPixel];
-            this._depthData = new ushort[Constants.kDefaultFrameHeight * Constants.kDefaultFrameWidth];
+            this._colorData = new byte[this.ColorInfo.Size];
+            this._depthData = new ushort[this.DepthInfo.Size];
         }
 
         public event EventHandler<ColorFrameEventArgs> ColorFrameProduced;
         public event EventHandler<DepthFrameEventArgs> DepthFrameProduced;
         public event EventHandler ColorFrameDropped;
         public event EventHandler DepthFrameDropped;
+        public event EventHandler<IRFrameEventArgs> IRFrameProduced;
+        public event EventHandler IRFrameDropped;
+
+        public ColorInfo ColorInfo {
+            get
+            {
+                return new ColorInfo() {
+                    Width = 1920,
+                    Height = 1080,
+                    Format = System.Windows.Media.PixelFormats.Bgr32,
+                    FPS = 30
+                };
+            }
+        }
+        public DepthInfo DepthInfo
+        {
+            get
+            {
+                return new DepthInfo()
+                {
+                    Width = 512,
+                    Height = 424,
+                    //Format = System.Windows.Media.PixelFormats.Bgr32,
+                    FPS = 30
+                };
+            }
+        }
 
 
         public bool IsInitialized { get => this._isInitialized; }
@@ -66,6 +93,12 @@ namespace kinect2_nidaq.Models
                 }
             }
         }
+
+        public bool IsIRStreamEnabled { get => false; set => throw new NotImplementedException(); }
+
+        public bool IsIRStreamSupported => false;
+
+        public IRInfo IRInfo => throw new NotImplementedException();
 
         public void Initialize()
         {
@@ -135,7 +168,7 @@ namespace kinect2_nidaq.Models
             using (ColorFrame frame = e.FrameReference.AcquireFrame())
             {
 
-                var colorEventArgs = new ColorFrameEventArgs();
+                var colorEventArgs = new K2ColorFrameEventArgs();
                 colorEventArgs.RelativeTime = e.FrameReference.RelativeTime;
                 // colorEventArgs.TimeStamp = CurrentNITimeStamp; // TODO
 
@@ -158,10 +191,8 @@ namespace kinect2_nidaq.Models
                     colorEventArgs.RelativeTime = frame.RelativeTime;
                     colorEventArgs.ColorData = this._colorData;
                     colorEventArgs.ColorSpacepoints = this._colorSpacePoints;
-                    colorEventArgs.Height = frame.FrameDescription.Height;
-                    colorEventArgs.Width = frame.FrameDescription.Width;
-                    colorEventArgs.DepthWidth = Constants.kDefaultFrameWidth;
-                    colorEventArgs.DepthHeight = Constants.kDefaultFrameHeight;
+                    colorEventArgs.ColorInfo = this.ColorInfo;
+                    colorEventArgs.DepthInfo = this.DepthInfo;
 
                     this.ColorFrameProduced?.Invoke(this, colorEventArgs);
                 }
@@ -192,8 +223,7 @@ namespace kinect2_nidaq.Models
 
                     // depthEventArgs.TimeStamp = CurrentNITimeStamp; // TODO
                     depthEventArgs.DepthData = this._depthData;
-                    depthEventArgs.Height = frame.FrameDescription.Height;
-                    depthEventArgs.Width = frame.FrameDescription.Width;
+                    depthEventArgs.DepthInfo = this.DepthInfo;
                     depthEventArgs.DepthMinReliableDistance = frame.DepthMinReliableDistance;
                     depthEventArgs.DepthMaxReliableDistance = frame.DepthMaxReliableDistance;
 

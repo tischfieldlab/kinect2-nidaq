@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace kinect2_nidaq.ViewModels
@@ -50,21 +51,28 @@ namespace kinect2_nidaq.ViewModels
                 this.recorder = new Recorder(recordingMode, TimeSpan.FromMinutes(this.Settings.RecordingDuration));
                 this.recorder.PropertyChanged += this.Recorder_PropertyChanged;
                 this.recorder.RecordingStarted += Recorder_RecordingStarted;
+                this.recorder.BeforeRecordingEnd += Recorder_BeforeRecordingEnd;
                 this.recorder.RecordingFinished += Recorder_RecordingFinished;
 
                 this.recorder.AddDevice(this.Kinect);
-                this.recorder.AddWriter(new MetadataWriter(fileHelper.Metadata, this.Settings));
+                this.recorder.AddWriter(new MetadataWriter(fileHelper.Metadata, this.Settings, this.Kinect));
 
                 if (this.Settings.IsColorStreamEnabled)
                 {
                     this.Performance.IsColorAcquisitionActive = true;
-                    this.recorder.AddWriter(new KinectColorWriter(fileHelper.ColorTS, fileHelper.ColorVid, this.Kinect.ColorStream));
+                    this.recorder.AddWriter(new KinectColorWriter(this.Kinect.ColorInfo, fileHelper.ColorTS, fileHelper.ColorVid, this.Kinect.ColorStream));
                 }
 
                 if (this.Settings.IsDepthStreamEnabled)
                 {
                     this.Performance.IsDepthAcquisitionActive = true;
                     this.recorder.AddWriter(new KinectDepthWriter(fileHelper.DepthTS, fileHelper.DepthVid, this.Kinect.DepthStream));
+                }
+
+                if (this.Settings.IsIRStreamEnabled)
+                {
+                    this.Performance.IsIRAcquisitionActive = true;
+                    this.recorder.AddWriter(new KinectIRWriter(this.Kinect.IRInfo, fileHelper.IRTS, fileHelper.IRVid, this.Kinect.IRStream));
                 }
 
                 if (this.Settings.AnalogNIDAQ.IsEnabled)
@@ -87,6 +95,8 @@ namespace kinect2_nidaq.ViewModels
                     this.recorder.AddPostRecordTask(relocator.RelocateFiles);
                 }
 
+                this.WatchQueueUtilization();
+
                 this.recorder.Start();
             }
             else
@@ -101,6 +111,9 @@ namespace kinect2_nidaq.ViewModels
 
                 if (this.Settings.IsDepthStreamEnabled)
                     this.Performance.IsDepthAcquisitionActive = true;
+
+                if (this.Settings.IsIRStreamEnabled)
+                    this.Performance.IsIRAcquisitionActive = true;
             }
         }
 
@@ -123,6 +136,13 @@ namespace kinect2_nidaq.ViewModels
             this.Performance.ApplicationStatus = "Recording";
         }
 
+        private void Recorder_BeforeRecordingEnd(object sender, EventArgs e)
+        {
+            this.Performance.ApplicationStatus = "Finalizing";
+            this.Performance.ProgressETA = "Finalizing";
+            this.Performance.Progress = 1.0;
+        }
+
         private void Recorder_RecordingFinished(object sender, EventArgs e)
         {
             this.Settings.ActivateSettings();
@@ -131,7 +151,14 @@ namespace kinect2_nidaq.ViewModels
             this.Performance.Progress = 1.0;
             this.Performance.IsColorAcquisitionActive = false;
             this.Performance.IsDepthAcquisitionActive = false;
+            this.Performance.IsIRAcquisitionActive = false;
             this.Performance.IsNidaqAcquisitionActive = false;
+
+            this.Performance.ColorFrameQueueUtilization = 0;
+            this.Performance.DepthFrameQueueUtilization = 0;
+            this.Performance.IRFrameQueueUtilization = 0;
+            this.Performance.NidaqFrameQueueUtilization = 0;
+
             this.IsRecording = false;
         }
 
@@ -146,22 +173,32 @@ namespace kinect2_nidaq.ViewModels
             {
                 this.Performance.ProgressETA = "ETA: Continuous";
             }
-
-            if(this.Kinect.ColorStream != null)
-                this.Performance.ColorFrameQueueUtilization = ((double)this.Kinect.ColorStream.Count / (double)Constants.kMaxFrames);
-            if (this.Kinect.DepthStream != null)
-                this.Performance.DepthFrameQueueUtilization = ((double)this.Kinect.DepthStream.Count / (double)Constants.kMaxFrames);
-            if (this.AnalogDAQ.AnalogStream != null)
-                this.Performance.NidaqFrameQueueUtilization = ((double)this.AnalogDAQ.AnalogStream.Count / (double)Constants.nMaxBuffer);
         }
-
-        
 
         private void Compressor_Progress(object sender, CompressionProgressEventArgs e)
         {
             this.Performance.ApplicationStatus = "Compressing";
             this.Performance.ProgressETA = String.Format("ETA: ({0} mins, {1:F0} secs)", Math.Floor(e.SmoothedETA / 60), e.SmoothedETA % 60);
             this.Performance.Progress = e.Progress;
+        }
+
+        private void WatchQueueUtilization()
+        {
+            Task.Run(() =>
+            {
+                while (this.IsRecording)
+                {
+                    if (this.Kinect.ColorStream != null)
+                        this.Performance.ColorFrameQueueUtilization = ((double)this.Kinect.ColorStream.Count / (double)Constants.kMaxFrames);
+                    if (this.Kinect.DepthStream != null)
+                        this.Performance.DepthFrameQueueUtilization = ((double)this.Kinect.DepthStream.Count / (double)Constants.kMaxFrames);
+                    if (this.Kinect.IRStream != null)
+                        this.Performance.IRFrameQueueUtilization = ((double)this.Kinect.IRStream.Count / (double)Constants.kMaxFrames);
+                    if (this.AnalogDAQ.AnalogStream != null)
+                        this.Performance.NidaqFrameQueueUtilization = ((double)this.AnalogDAQ.AnalogStream.Count / (double)Constants.nMaxBuffer);
+                    Thread.Sleep(100);
+                }
+            });
         }
 
     }

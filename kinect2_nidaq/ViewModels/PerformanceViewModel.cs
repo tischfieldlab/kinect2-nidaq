@@ -140,6 +140,19 @@ namespace kinect2_nidaq.ViewModels
         }
         protected bool _isDepthAcquisitionActive;
 
+        public double IRFrameQueueUtilization
+        {
+            get => this._irFrameQueueUtilization;
+            set => this.SetField(ref this._irFrameQueueUtilization, value);
+        }
+        protected double _irFrameQueueUtilization;
+        public bool IsIRAcquisitionActive
+        {
+            get => this._isIRAcquisitionActive;
+            set => this.SetField(ref this._isIRAcquisitionActive, value);
+        }
+        protected bool _isIRAcquisitionActive;
+
         public double NidaqFrameQueueUtilization
         {
             get => this._nidaqFrameQueueUtilization;

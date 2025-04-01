@@ -38,15 +38,15 @@ namespace Sensor
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static WriteableBitmap ToBitmap(this ColorFrameEventArgs e)
+        public static WriteableBitmap ToBitmap(this K2ColorFrameEventArgs e)
         {
             WriteableBitmap bitmap;
-            bitmap = new WriteableBitmap(e.DepthWidth, e.DepthHeight, Constants.kDpi, Constants.kDpi, Constants.kFormat, null);
+            bitmap = new WriteableBitmap(e.DepthInfo.Width, e.DepthInfo.Height, Constants.kDpi, Constants.kDpi, e.ColorInfo.Format, null);
 
-            int stride = bitmap.PixelWidth * Constants.kBytesPerPixel;
+            int stride = bitmap.PixelWidth * e.ColorInfo.BytesPerPixel;
             if (null != e.ColorSpacepoints)
             {
-                byte[] colorData = new byte[bitmap.PixelWidth * bitmap.PixelHeight * Constants.kBytesPerPixel];
+                byte[] colorData = new byte[e.ColorInfo.Size];
                 int BytesPerPixel = bitmap.Format.BitsPerPixel / 8;
 
                 int colorIndex = 0;
@@ -56,11 +56,11 @@ namespace Sensor
                     int colorX = (int)(colorSpacePoint.X);
                     int colorY = (int)(colorSpacePoint.Y);
 
-                    if (colorX >= 0 && colorX < e.Width && colorY >= 0 && colorY < e.Height)
+                    if (colorX >= 0 && colorX < e.ColorInfo.Width && colorY >= 0 && colorY < e.ColorInfo.Height)
                     {
                         for (int offset = 0; offset < BytesPerPixel; ++offset)
                         {
-                            colorData[colorIndex + offset] = e.ColorData[(colorY * e.Width + colorX) * BytesPerPixel + offset];
+                            colorData[colorIndex + offset] = e.ColorData[(colorY * e.ColorInfo.Width + colorX) * BytesPerPixel + offset];
                         }
                     }
 
@@ -73,6 +73,31 @@ namespace Sensor
             return bitmap;
         }
 
+        public static WriteableBitmap ToBitmap(this K4AColorFrameEventArgs e)
+        {
+            WriteableBitmap bitmap = new WriteableBitmap(e.ColorInfo.Width, e.ColorInfo.Height, Constants.kDpi, Constants.kDpi, e.ColorInfo.Format, null);
+            int stride = bitmap.PixelWidth * e.ColorInfo.BytesPerPixel;
+            bitmap.WritePixels(new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight), e.ColorData, stride, 0);
+            bitmap.Freeze();
+            return bitmap;
+        }
+
+        public static WriteableBitmap ToBitmap(this ColorFrameEventArgs e)
+        {
+            if (e is K4AColorFrameEventArgs)
+            {
+                return (e as K4AColorFrameEventArgs).ToBitmap();
+            }
+            else if (e is K2ColorFrameEventArgs)
+            {
+                return (e as K2ColorFrameEventArgs).ToBitmap();
+            }
+            else
+            {
+                throw new InvalidCastException("This method only works with subtypes K4AColorFrameEventArgs or K2ColorFrameEventArgs! Got " + e.GetType().Name);
+            }
+        }
+
         public static WriteableBitmap ToBitmap(this DepthFrameEventArgs e)
         {
 
@@ -83,11 +108,11 @@ namespace Sensor
 
             ushort minDepth;
             ushort maxDepth;
-            
+
             try
             {
                 minDepth = kinect2_nidaq.Properties.Settings.Default.DepthMinValue;
-                maxDepth = kinect2_nidaq.Properties.Settings.Default.DepthMaxValue;               
+                maxDepth = kinect2_nidaq.Properties.Settings.Default.DepthMaxValue;
             }
             catch
             {
@@ -99,9 +124,9 @@ namespace Sensor
             minDepth = (ushort)(minDepth >= 0 ? minDepth : 1);
             maxDepth = (ushort)(maxDepth > minDepth ? maxDepth : minDepth + 1);
 
-            byte[] pixels = new byte[e.Width * e.Height * (format.BitsPerPixel + 7) / 8];
+            byte[] pixels = new byte[e.DepthInfo.Size * (format.BitsPerPixel + 7) / 8];
             int colorIndex = 0;
-            
+
             for (int depthIndex = 0; depthIndex < e.DepthData.Length; ++depthIndex)
             {
 
@@ -111,7 +136,7 @@ namespace Sensor
                 //intensity = (byte)(depth <= maxDepth ? depth : 0);
 
                 float intensity = (float)(depth);
-                
+
                 intensity = (intensity >= minDepth ? intensity : -1);
                 intensity = (intensity <= maxDepth ? intensity : -1);
                 intensity = (intensity - minDepth) / (maxDepth - minDepth);
@@ -122,7 +147,7 @@ namespace Sensor
 
                 // from float to byte (256 values)
 
-                byte intensityB = (byte)(255*(1-intensity));
+                byte intensityB = (byte)(255 * (1 - intensity));
 
                 pixels[colorIndex++] = intensityB;
                 pixels[colorIndex++] = intensityB;
@@ -132,10 +157,21 @@ namespace Sensor
 
             }
 
-            int stride = e.Width * format.BitsPerPixel / 8;
+            int stride = e.DepthInfo.Width * format.BitsPerPixel / 8;
             WriteableBitmap bitmap;
-            bitmap = new WriteableBitmap(e.Width, e.Height, Constants.kDpi, Constants.kDpi, Constants.kFormat, null);
-            bitmap.WritePixels(new Int32Rect(0, 0, e.Width, e.Height), pixels, stride, 0);
+            bitmap = new WriteableBitmap(e.DepthInfo.Width, e.DepthInfo.Height, Constants.kDpi, Constants.kDpi, format, null);
+            bitmap.WritePixels(new Int32Rect(0, 0, e.DepthInfo.Width, e.DepthInfo.Height), pixels, stride, 0);
+            bitmap.Freeze();
+            return bitmap;
+        }
+        public static WriteableBitmap ToBitmap(this IRFrameEventArgs e)
+        {
+            var format = PixelFormats.Gray16;
+            int stride = e.IRInfo.Width * format.BitsPerPixel / 8;
+
+            WriteableBitmap bitmap;
+            bitmap = new WriteableBitmap(e.IRInfo.Width, e.IRInfo.Height, Constants.kDpi, Constants.kDpi, format, null);
+            bitmap.WritePixels(new Int32Rect(0, 0, e.IRInfo.Width, e.IRInfo.Height), e.IRData, stride, 0);
             bitmap.Freeze();
             return bitmap;
         }

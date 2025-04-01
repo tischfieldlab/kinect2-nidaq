@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace kinect2_nidaq.Models
 {
-    public class KinectColorWriter : IDataWriter
+    public class KinectIRWriter : IDataWriter
     {
-        private BlockingCollection<ColorFrameEventArgs> _queue;
-        private VideoFileWriter _colorVideoWriter;
+        private BlockingCollection<IRFrameEventArgs> _queue;
+        private VideoFileWriter _irVideoWriter;
         private TimeSpan _initialTimeSpan;
 
         private string _tsDestPath;
@@ -21,23 +21,23 @@ namespace kinect2_nidaq.Models
 
         private Task _writingTask;
 
-        private ColorInfo _info;
+        private IRInfo _info;
 
 
-        public KinectColorWriter(ColorInfo info, string tsDestPath, string videoDestPath, BlockingCollection<ColorFrameEventArgs> queue)
+        public KinectIRWriter(IRInfo info, string tsDestPath, string videoDestPath, BlockingCollection<IRFrameEventArgs> queue)
         {
             this._info = info;
             this._tsDestPath = tsDestPath;
             this._videoDestPath = videoDestPath;
 
-            this._colorVideoWriter = new VideoFileWriter();
+            this._irVideoWriter = new VideoFileWriter();
 
             this._queue = queue;
         }
 
         public void Start()
         {
-            this._writingTask = Task.Factory.StartNew(this.ColorRunner);
+            this._writingTask = Task.Factory.StartNew(this.IRRunner);
         }
         public void Stop()
         {
@@ -59,43 +59,43 @@ namespace kinect2_nidaq.Models
             }
         }
 
-        private void ColorRunner()
+        private void IRRunner()
         {
-            using (var colorTsFileStream = new FileStream(this._tsDestPath, FileMode.Append))
-            using (var colorTsStreamWriter = new StreamWriter(colorTsFileStream))
+            using (var irTsFileStream = new FileStream(this._tsDestPath, FileMode.Append))
+            using (var irTsStreamWriter = new StreamWriter(irTsFileStream))
             {
                 while (!this._queue.IsCompleted)
                 {
-                    ColorFrameEventArgs colorData = null;
-                    while (this._queue.TryTake(out colorData, 100))
+                    IRFrameEventArgs irData = null;
+                    while (this._queue.TryTake(out irData, 100))
                     {
-                        if (true /*IsColorStreamEnabled && IsRecordingEnabled*/) // TODO: Not sure we need this check???
+                        if (true /*IsIRStreamEnabled && IsRecordingEnabled*/) // TODO: Not sure we need this check???
                         {
-                            if (!this._colorVideoWriter.IsOpen)
+                            if (!this._irVideoWriter.IsOpen)
                             {
-                                this._colorVideoWriter.Open(this._videoDestPath,
+                                this._irVideoWriter.Open(this._videoDestPath,
                                     this._info.Width,
                                     this._info.Height,
                                     new Accord.Math.Rational(this._info.FPS),
-                                    VideoCodec.Default,
+                                    VideoCodec.FFV1,
                                     Properties.Settings.Default.BitRate);
 
-                                this._initialTimeSpan = colorData.RelativeTime;
+                                this._initialTimeSpan = irData.RelativeTime;
                             }
 
-                            colorTsStreamWriter.WriteLine(String.Format("{0} {1}", colorData.RelativeTime.TotalMilliseconds, colorData.TimeStamp));
+                            irTsStreamWriter.WriteLine(String.Format("{0} {1}", irData.RelativeTime.TotalMilliseconds, irData.TimeStamp));
 
                             // Writing with timestamps makes FFMPEG choke!!
-                            //this._colorVideoWriter.WriteVideoFrame(colorData.ToBitmap().ToSystemBitmap(), colorData.RelativeTime - this._initialTimeSpan);
+                            //this._irVideoWriter.WriteVideoFrame(irData.ToBitmap().ToSystemBitmap(), irData.RelativeTime - this._initialTimeSpan);
 
                             // Do it like this instead
-                            this._colorVideoWriter.WriteVideoFrame(colorData.ToBitmap().ToSystemBitmap());
+                            this._irVideoWriter.WriteVideoFrame(irData.ToBitmap().ToSystemBitmap());
                         }
                     }
                 }
             }
-            this._colorVideoWriter.Close();
-            this._colorVideoWriter.Dispose();
+            this._irVideoWriter.Close();
+            this._irVideoWriter.Dispose();
             this._queue.Dispose();
         }
     }

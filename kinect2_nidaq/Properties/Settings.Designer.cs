@@ -130,5 +130,17 @@ namespace kinect2_nidaq.Properties {
                 this["BitRate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("K4A")]
+        public string DeviceType {
+            get {
+                return ((string)(this["DeviceType"]));
+            }
+            set {
+                this["DeviceType"] = value;
+            }
+        }
     }
 }

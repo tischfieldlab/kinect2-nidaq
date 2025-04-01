@@ -16,12 +16,13 @@ namespace kinect2_nidaq.Models
     {
         private string _destPath;
         private SettingsViewModel settings;
+        private KinectViewModel kinect;
 
-        public MetadataWriter(string destPath, SettingsViewModel settings)
+        public MetadataWriter(string destPath, SettingsViewModel settings, KinectViewModel kinect)
         {
             this._destPath = destPath;
             this.settings = settings;
-
+            this.kinect = kinect;
         }
 
         public void Start()
@@ -37,16 +38,17 @@ namespace kinect2_nidaq.Models
         protected void Write()
         {
             kMetadata fMetadata = new kMetadata();
-            fMetadata.ColorResolution = new int[2] { Constants.kDefaultFrameWidth, Constants.kDefaultFrameHeight };
-            fMetadata.DepthResolution = fMetadata.ColorResolution;
-
             fMetadata.SubjectName = this.settings.SubjectName;
             fMetadata.SessionName = this.settings.SessionName;
-            fMetadata.IsLittleEndian = BitConverter.IsLittleEndian;
-            fMetadata.DepthDataType = this.GetTypeForProperty(typeof(DepthFrameEventArgs), "DepthData");
-            fMetadata.ColorDataType = this.GetTypeForProperty(typeof(ColorFrameEventArgs), "ColorData");
             fMetadata.ApparatusName = Properties.Settings.Default.ApparatusName;
 
+            fMetadata.ColorResolution = new int[2] { this.kinect.ColorInfo.Width, this.kinect.ColorInfo.Height };
+            fMetadata.ColorDataType = this.GetTypeForProperty(typeof(ColorFrameEventArgs), "ColorData");
+
+            fMetadata.DepthResolution = new int[2] { this.kinect.DepthInfo.Width, this.kinect.DepthInfo.Height };
+            fMetadata.IsLittleEndian = BitConverter.IsLittleEndian;
+            fMetadata.DepthDataType = this.GetTypeForProperty(typeof(DepthFrameEventArgs), "DepthData");
+            
             if (this.settings.AnalogNIDAQ.IsEnabled)
             {
                 fMetadata.NidaqChannels = this.settings.AnalogNIDAQ.SelectedChannels.Count;

@@ -25,12 +25,16 @@ namespace kinect2_nidaq.ViewModels
         private int _depthFramesDropped;
         private DepthFrameEventArgs _lastDepthFrame;
 
+        private int _irFramesDropped;
+        private IRFrameEventArgs _lastIRFrame;
+
         private bool _flipFrameDisplay;
         private ushort _depthMinDisplay;
         private ushort _depthMaxDisplay;
 
         public event EventHandler<ColorFrameEventArgs> ColorFrameProduced;
         public event EventHandler<DepthFrameEventArgs> DepthFrameProduced;
+        public event EventHandler<IRFrameEventArgs> IRFrameProduced;
 
 
         public KinectViewModel(SettingsViewModel settings)
@@ -39,10 +43,30 @@ namespace kinect2_nidaq.ViewModels
             
         }
 
+        public ColorInfo ColorInfo { get { return this._sensor.ColorInfo; } }
+        public DepthInfo DepthInfo { get { return this._sensor.DepthInfo; } }
+        public IRInfo IRInfo { get { return this._sensor.IRInfo; } }
+
 
         public void Initialize()
         {
-            this._sensor = new KinectV2();
+            if (Properties.Settings.Default.DeviceType == "K4A")
+            {
+                this._sensor = new KinectAzure();
+            }
+            else if (Properties.Settings.Default.DeviceType == "KinectV2")
+            {
+                this._sensor = new KinectV2();
+            }
+            else
+            {
+                MessageBox.Show("Invalid value for DeviceType in application settings: \""+Properties.Settings.Default.DeviceType+"\"!",
+                                "Expecting one of \"K4A\" or \"KinectV2\". Please update application settings and restart!",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+                App.Current.Shutdown();
+            }
+            
             try
             {
                 this._sensor.Initialize();
@@ -59,6 +83,7 @@ namespace kinect2_nidaq.ViewModels
 
             this._sensor.IsColorStreamEnabled = this.settings.IsColorStreamEnabled;
             this._sensor.IsDepthStreamEnabled = this.settings.IsDepthStreamEnabled;
+            this._sensor.IsIRStreamEnabled = this.settings.IsIRStreamEnabled;
 
             if (this.settings.IsColorStreamEnabled)
             {
@@ -74,6 +99,14 @@ namespace kinect2_nidaq.ViewModels
                     this.DepthStream = new BlockingCollection<DepthFrameEventArgs>(Constants.kMaxFrames);
                 this._sensor.DepthFrameDropped += this._sensor_DepthFrameDropped;
                 this._sensor.DepthFrameProduced += this._sensor_DepthFrameProduced;
+            }
+
+            if (this.settings.IsIRStreamEnabled)
+            {
+                if (!this.settings.IsPreviewMode)
+                    this.IRStream = new BlockingCollection<IRFrameEventArgs>(Constants.kMaxFrames);
+                this._sensor.IRFrameDropped += this._sensor_IRFrameDropped;
+                this._sensor.IRFrameProduced += this._sensor_IRFrameProduced;
             }
             this._isInitialized = true;
         }
@@ -113,6 +146,17 @@ namespace kinect2_nidaq.ViewModels
                 
                 this._sensor.DepthFrameDropped -= this._sensor_DepthFrameDropped;
                 this._sensor.DepthFrameProduced -= this._sensor_DepthFrameProduced;
+            }
+            if (this.settings.IsIRStreamEnabled)
+            {
+                if (this.IRStream != null)
+                {
+                    this.IRStream.CompleteAdding();
+                    this.IRStream = null;
+                }
+
+                this._sensor.IRFrameDropped -= this._sensor_IRFrameDropped;
+                this._sensor.IRFrameProduced -= this._sensor_IRFrameProduced;
             }
         }
 
@@ -162,6 +206,29 @@ namespace kinect2_nidaq.ViewModels
         protected BitmapSource _lastDepthFrameBitmap;
 
 
+        public BlockingCollection<IRFrameEventArgs> IRStream { get; private set; }
+        public int IRFramesDropped
+        {
+            get => this._irFramesDropped;
+            set => this.SetField(ref this._irFramesDropped, value);
+        }
+        public IRFrameEventArgs LastIRFrame
+        {
+            get => this._lastIRFrame;
+            set
+            {
+                this.SetField(ref this._lastIRFrame, value);
+                Task.Run(() => this.LastIRFrameBitmap = this._lastIRFrame.ToBitmap());
+            }
+        }
+        public BitmapSource LastIRFrameBitmap
+        {
+            get => this._lastIRFrameBitmap;
+            set => this.SetField(ref this._lastIRFrameBitmap, value);
+        }
+        protected BitmapSource _lastIRFrameBitmap;
+
+
         public bool FlipFrameDisplay
         {
             get => this._flipFrameDisplay;
@@ -190,6 +257,19 @@ namespace kinect2_nidaq.ViewModels
         private void _sensor_DepthFrameDropped(object sender, EventArgs e)
         {
             this.DepthFramesDropped++;
+        }
+
+        private void _sensor_IRFrameProduced(object sender, IRFrameEventArgs e)
+        {
+            this.IRFrameProduced?.Invoke(this, e);
+            this.LastIRFrame = e;
+            if (this.IRStream != null)
+                this.IRStream.Add(e);
+        }
+
+        private void _sensor_IRFrameDropped(object sender, EventArgs e)
+        {
+            this.IRFramesDropped++;
         }
 
         private void _sensor_ColorFrameProduced(object sender, ColorFrameEventArgs e)

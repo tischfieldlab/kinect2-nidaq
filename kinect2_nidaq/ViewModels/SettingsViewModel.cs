@@ -116,6 +116,13 @@ namespace kinect2_nidaq.ViewModels
         }
         private bool _isDepthStreamEnabled;
 
+        public bool IsIRStreamEnabled
+        {
+            get => this._isIRStreamEnabled;
+            set => this.SetField(ref this._isIRStreamEnabled, value);
+        }
+        private bool _isIRStreamEnabled;
+
 
         public AnalogNIDAQSettingsViewModel AnalogNIDAQ { get; set; }
 
