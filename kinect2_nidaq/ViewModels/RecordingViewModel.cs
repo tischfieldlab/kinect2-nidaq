@@ -60,7 +60,7 @@ namespace kinect2_nidaq.ViewModels
                 if (this.Settings.IsColorStreamEnabled)
                 {
                     this.Performance.IsColorAcquisitionActive = true;
-                    this.recorder.AddWriter(new KinectColorWriter(this.Kinect.ColorInfo, fileHelper.ColorTS, fileHelper.ColorVid, this.Kinect.ColorStream));
+                    this.recorder.AddWriter(new KinectColorWriterAlt(this.Kinect.ColorInfo, fileHelper.ColorTS, fileHelper.ColorVid, this.Kinect.ColorStream));
                 }
 
                 if (this.Settings.IsDepthStreamEnabled)
