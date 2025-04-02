@@ -168,15 +168,17 @@ namespace kinect2_nidaq.Models
             }
             else
             {
-                var colorEventArgs = new K4AColorFrameEventArgs();
-                colorEventArgs.ColorData = data.Color.Memory.ToArray();
-                // colorEventArgs.TimeStamp = CurrentNITimeStamp;
-                colorEventArgs.RelativeTime = data.Color.DeviceTimestamp;
-                //colorEventArgs.Transform = 
-                //colorEventArgs.Image = this.transform.ColorImageToDepthCamera(data);
-                colorEventArgs.ColorInfo = this.ColorInfo;
-                colorEventArgs.DepthInfo = this.DepthInfo;
-                colorEventArgs.Transform = this._transform;
+                var colorEventArgs = new K4AColorFrameEventArgs
+                {
+                    ColorData = data.Color.Memory.ToArray(),
+                    //colorEventArgs.TimeStamp = CurrentNITimeStamp;
+                    RelativeTime = data.Color.DeviceTimestamp,
+                    //colorEventArgs.Transform = 
+                    //colorEventArgs.Image = this.transform.ColorImageToDepthCamera(data);
+                    ColorInfo = this.ColorInfo,
+                    DepthInfo = this.DepthInfo,
+                    Transform = this._transform
+                };
 
                 this.ColorFrameProduced?.Invoke(this, colorEventArgs);
             }
@@ -190,11 +192,13 @@ namespace kinect2_nidaq.Models
             }
             else
             {
-                var depthEventArgs = new DepthFrameEventArgs();
-                depthEventArgs.RelativeTime = data.Depth.DeviceTimestamp;
-                depthEventArgs.DepthData = data.Depth.GetPixels<ushort>().ToArray();
-                //depthEventArgs.TimeStamp = CurrentNITimeStamp;
-                depthEventArgs.DepthInfo = this.DepthInfo;
+                var depthEventArgs = new DepthFrameEventArgs
+                {
+                    RelativeTime = data.Depth.DeviceTimestamp,
+                    DepthData = data.Depth.GetPixels<ushort>().ToArray(),
+                    //depthEventArgs.TimeStamp = CurrentNITimeStamp;
+                    DepthInfo = this.DepthInfo
+                };
 
                 this.DepthFrameProduced?.Invoke(this, depthEventArgs);
             }
@@ -208,11 +212,13 @@ namespace kinect2_nidaq.Models
             }
             else
             {
-                var IREventArgs = new IRFrameEventArgs();
-                IREventArgs.RelativeTime = data.IR.DeviceTimestamp;
-                IREventArgs.IRData = data.IR.GetPixels<ushort>().ToArray();
-                //depthEventArgs.TimeStamp = CurrentNITimeStamp;
-                IREventArgs.IRInfo = this.IRInfo;
+                var IREventArgs = new IRFrameEventArgs
+                {
+                    RelativeTime = data.IR.DeviceTimestamp,
+                    IRData = data.IR.GetPixels<ushort>().ToArray(),
+                    //depthEventArgs.TimeStamp = CurrentNITimeStamp;
+                    IRInfo = this.IRInfo
+                };
 
                 this.IRFrameProduced?.Invoke(this, IREventArgs);
             }

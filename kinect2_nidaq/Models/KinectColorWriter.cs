@@ -30,8 +30,15 @@ namespace kinect2_nidaq.Models
             this._tsDestPath = tsDestPath;
             this._videoDestPath = videoDestPath;
 
-            this._colorVideoWriter = new VideoFileWriter();
+            this._colorVideoWriter = new VideoFileWriter()
+            {
+                Width = this._info.Width,
+                Height = this._info.Height,
+                FrameRate = new Accord.Math.Rational(this._info.FPS),
+                BitRate = Properties.Settings.Default.BitRate,
+                VideoCodec = VideoCodec.Default,
 
+            };
             this._queue = queue;
         }
 
@@ -73,12 +80,7 @@ namespace kinect2_nidaq.Models
                         {
                             if (!this._colorVideoWriter.IsOpen)
                             {
-                                this._colorVideoWriter.Open(this._videoDestPath,
-                                    this._info.Width,
-                                    this._info.Height,
-                                    new Accord.Math.Rational(this._info.FPS),
-                                    VideoCodec.Default,
-                                    Properties.Settings.Default.BitRate);
+                                this._colorVideoWriter.Open(this._videoDestPath);
 
                                 this._initialTimeSpan = colorData.RelativeTime;
                             }

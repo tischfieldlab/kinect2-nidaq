@@ -40,8 +40,10 @@ namespace kinect2_nidaq.ViewModels
         public bool IsMonitoring { get => this._checkTimer != null && this._checkTimer.IsEnabled; }
         public void StartMonitor()
         {
-            this._checkTimer = new DispatcherTimer();
-            this._checkTimer.Interval = TimeSpan.FromMilliseconds(1000);
+            this._checkTimer = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromMilliseconds(1000)
+            };
             this._checkTimer.Tick += this.CheckTimerTick;
             this._checkTimer.Start();
         }
@@ -66,7 +68,7 @@ namespace kinect2_nidaq.ViewModels
                         DriveInfo SaveDrive = new DriveInfo(PathInfo.Directory.Root.FullName);
                         Double FreeMem = SaveDrive.AvailableFreeSpace / 1e9;
                         Double AllMem = SaveDrive.TotalSize / 1e9;
-                        this.FreeDiskSpace = String.Format("{0} {1:0.##} / {2:0.##} GB Free", SaveDrive.RootDirectory, FreeMem, AllMem);
+                        this.FreeDiskSpace = String.Format("{0} {1:0} / {2:0} GB Free", SaveDrive.RootDirectory, FreeMem, AllMem);
                     }
                     else
                     {
@@ -82,8 +84,8 @@ namespace kinect2_nidaq.ViewModels
         }
         
 
-        public string CPUPerformance { get => (100 - this._cpuPerformance.NextValue()).ToString("F1") + "% Free"; }
-        public string RAMPerformance { get => this._ramPerformance.NextValue().ToString("F1") + "MB Free"; }
+        public string CPUPerformance { get => (100 - this._cpuPerformance.NextValue()).ToString("F0") + "% Free"; }
+        public string RAMPerformance { get => this._ramPerformance.NextValue().ToString("F0") + "MB Free"; }
         public string FreeDiskSpace
         {
             get => this._freeDiskSpace;

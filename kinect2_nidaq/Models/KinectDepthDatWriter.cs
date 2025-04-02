@@ -12,10 +12,10 @@ namespace kinect2_nidaq.Models
 {
     public class KinectDepthDatWriter : IDataWriter
     {
-        private BlockingCollection<DepthFrameEventArgs> _queue;
+        private readonly BlockingCollection<DepthFrameEventArgs> _queue;
 
-        private string _tsDestPath;
-        private string _videoDestPath;
+        private readonly string _tsDestPath;
+        private readonly string _videoDestPath;
 
         private Task _writingTask;
 

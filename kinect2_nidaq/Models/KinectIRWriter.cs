@@ -8,20 +8,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace kinect2_nidaq.Models
 {
     public class KinectIRWriter : IDataWriter
     {
-        private BlockingCollection<IRFrameEventArgs> _queue;
-        private VideoFileWriter _irVideoWriter;
+        private readonly BlockingCollection<IRFrameEventArgs> _queue;
+        private readonly VideoFileWriter _irVideoWriter;
         private TimeSpan _initialTimeSpan;
 
-        private string _tsDestPath;
-        private string _videoDestPath;
+        private readonly string _tsDestPath;
+        private readonly string _videoDestPath;
 
         private Task _writingTask;
 
-        private IRInfo _info;
+        private readonly IRInfo _info;
 
 
         public KinectIRWriter(IRInfo info, string tsDestPath, string videoDestPath, BlockingCollection<IRFrameEventArgs> queue)
@@ -30,7 +31,14 @@ namespace kinect2_nidaq.Models
             this._tsDestPath = tsDestPath;
             this._videoDestPath = videoDestPath;
 
-            this._irVideoWriter = new VideoFileWriter();
+            this._irVideoWriter = new VideoFileWriter()
+            {
+                Width = this._info.Width,
+                Height = this._info.Height,
+                FrameRate = new Accord.Math.Rational(this._info.FPS),
+                VideoCodec = VideoCodec.Ffv1,
+                PixelFormat = AVPixelFormat.FormatGrayscale16bppLittleEndian,
+            };
 
             this._queue = queue;
         }
@@ -73,12 +81,7 @@ namespace kinect2_nidaq.Models
                         {
                             if (!this._irVideoWriter.IsOpen)
                             {
-                                this._irVideoWriter.Open(this._videoDestPath,
-                                    this._info.Width,
-                                    this._info.Height,
-                                    new Accord.Math.Rational(this._info.FPS),
-                                    VideoCodec.FFV1,
-                                    Properties.Settings.Default.BitRate);
+                                this._irVideoWriter.Open(this._videoDestPath);
 
                                 this._initialTimeSpan = irData.RelativeTime;
                             }

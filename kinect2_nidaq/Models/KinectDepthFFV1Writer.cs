@@ -12,16 +12,16 @@ namespace kinect2_nidaq.Models
 {
     public class KinectDepthFFV1Writer : IDataWriter
     {
-        private BlockingCollection<DepthFrameEventArgs> _queue;
-        private VideoFileWriter _videoWriter;
+        private readonly BlockingCollection<DepthFrameEventArgs> _queue;
+        private readonly VideoFileWriter _videoWriter;
         private TimeSpan _initialTimeSpan;
 
-        private string _tsDestPath;
-        private string _videoDestPath;
+        private readonly string _tsDestPath;
+        private readonly string _videoDestPath;
 
         private Task _writingTask;
 
-        private DepthInfo _info;
+        private readonly DepthInfo _info;
 
 
         public KinectDepthFFV1Writer(DepthInfo info, string tsDestPath, string videoDestPath, BlockingCollection<DepthFrameEventArgs> queue)
@@ -30,7 +30,14 @@ namespace kinect2_nidaq.Models
             this._tsDestPath = tsDestPath;
             this._videoDestPath = videoDestPath;
 
-            this._videoWriter = new VideoFileWriter();
+            this._videoWriter = new VideoFileWriter()
+            {
+                Width = this._info.Width,
+                Height = this._info.Height,
+                FrameRate = new Accord.Math.Rational(this._info.FPS),
+                VideoCodec = VideoCodec.Ffv1,
+                PixelFormat = AVPixelFormat.FormatGrayscale16bppLittleEndian,
+            };
 
             this._queue = queue;
         }
@@ -73,13 +80,7 @@ namespace kinect2_nidaq.Models
                         {
                             if (!this._videoWriter.IsOpen)
                             {
-                                this._videoWriter.Open(this._videoDestPath,
-                                    this._info.Width,
-                                    this._info.Height,
-                                    new Accord.Math.Rational(this._info.FPS),
-                                    VideoCodec.FFV1,
-                                    Properties.Settings.Default.BitRate);
-
+                                this._videoWriter.Open(this._videoDestPath);
                                 this._initialTimeSpan = data.RelativeTime;
                             }
 

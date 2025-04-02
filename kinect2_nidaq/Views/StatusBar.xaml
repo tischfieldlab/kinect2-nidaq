@@ -101,10 +101,10 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBlock Text="Frames Dropped" TextAlignment="Center" />
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <TextBlock Text="{Binding Path=Kinect.ColorFramesDropped, StringFormat={}Color: {0}}" />
-                    <TextBlock Text="{Binding Path=Kinect.DepthFramesDropped, StringFormat={}Depth: {0}}" Margin="6,0,0,0" />
-                    <TextBlock Text="{Binding Path=Kinect.IRFramesDropped, StringFormat={}IR: {0}}" Margin="6,0,0,0" />
+                <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding Path=Kinect.ColorFramesDropped, StringFormat={}C: {0}}" FontSize="10" />
+                    <TextBlock Text="{Binding Path=Kinect.DepthFramesDropped, StringFormat={}D: {0}}" FontSize="10" Margin="6,0,0,0" />
+                    <TextBlock Text="{Binding Path=Kinect.IRFramesDropped, StringFormat={}IR: {0}}" FontSize="10" Margin="6,0,0,0" />
                 </StackPanel>
                 <TextBlock Name="StatusBarFramesDropped"   />
             </Grid>

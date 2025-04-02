@@ -168,9 +168,12 @@ namespace kinect2_nidaq.Models
             using (ColorFrame frame = e.FrameReference.AcquireFrame())
             {
 
-                var colorEventArgs = new K2ColorFrameEventArgs();
-                colorEventArgs.RelativeTime = e.FrameReference.RelativeTime;
-                // colorEventArgs.TimeStamp = CurrentNITimeStamp; // TODO
+                var colorEventArgs = new K2ColorFrameEventArgs
+                {
+                    RelativeTime = e.FrameReference.RelativeTime
+                    // colorEventArgs.TimeStamp = CurrentNITimeStamp; // TODO
+                };
+                
 
                 if (frame == null)
                 {
