@@ -107,16 +107,12 @@ namespace Sensor
             }
         }
 
-        public static WriteableBitmap ToBitmap(this DepthFrameEventArgs e)
+        public static WriteableBitmap ToDisplayBitmap(this DepthFrameEventArgs e)
         {
+            PixelFormat outformat = PixelFormats.Gray8;
 
-            PixelFormat format = PixelFormats.Gray16;
-
-            //ushort minDepth = e.DepthMinReliableDistance;
-            //ushort maxDepth = e.DepthMaxReliableDistance;
-
-            /*ushort minDepth;
-            ushort maxDepth;
+            float minDepth;
+            float maxDepth;
 
             try
             {
@@ -130,45 +126,39 @@ namespace Sensor
             }
 
 
-            minDepth = (ushort)(minDepth >= 0 ? minDepth : 1);
-            maxDepth = (ushort)(maxDepth > minDepth ? maxDepth : minDepth + 1);
+            minDepth = (minDepth >= 0 ? minDepth : 1);
+            maxDepth = (maxDepth > minDepth ? maxDepth : minDepth + 1);
 
-            byte[] pixels = new byte[e.DepthInfo.Size * (format.BitsPerPixel + 7) / 8];
-            int colorIndex = 0;
+            byte[] pixels = new byte[e.DepthInfo.Width * e.DepthInfo.Height];
 
             for (int depthIndex = 0; depthIndex < e.DepthData.Length; ++depthIndex)
             {
-
-                ushort depth = e.DepthData[depthIndex];
-
-                //byte intensity = (byte)(depth >= minDepth ? depth : 0);
-                //intensity = (byte)(depth <= maxDepth ? depth : 0);
-
-                float intensity = (float)(depth);
-
+                float intensity = (float)e.DepthData[depthIndex];
                 intensity = (intensity >= minDepth ? intensity : -1);
                 intensity = (intensity <= maxDepth ? intensity : -1);
                 intensity = (intensity - minDepth) / (maxDepth - minDepth);
 
                 // negative values are mapped to 1 (which becomes 0)
-
                 intensity = (intensity < 0 ? 1 : intensity);
 
                 // from float to byte (256 values)
-
                 byte intensityB = (byte)(255 * (1 - intensity));
 
-                pixels[colorIndex++] = intensityB;
-                pixels[colorIndex++] = intensityB;
-                pixels[colorIndex++] = intensityB;
+                pixels[depthIndex] = intensityB;
+            }
 
-                ++colorIndex;
+            int stride = e.DepthInfo.Width * outformat.BitsPerPixel / 8;
+            WriteableBitmap bitmap = new WriteableBitmap(e.DepthInfo.Width, e.DepthInfo.Height, Constants.kDpi, Constants.kDpi, outformat, null);
+            bitmap.WritePixels(new Int32Rect(0, 0, e.DepthInfo.Width, e.DepthInfo.Height), pixels, stride, 0);
+            bitmap.Freeze();
+            return bitmap;
+        }
 
-            }*/
-
+        public static WriteableBitmap ToBitmap(this DepthFrameEventArgs e)
+        {
+            PixelFormat format = PixelFormats.Gray16;
             int stride = e.DepthInfo.Width * format.BitsPerPixel / 8;
-            WriteableBitmap bitmap;
-            bitmap = new WriteableBitmap(e.DepthInfo.Width, e.DepthInfo.Height, Constants.kDpi, Constants.kDpi, format, null);
+            WriteableBitmap bitmap = new WriteableBitmap(e.DepthInfo.Width, e.DepthInfo.Height, Constants.kDpi, Constants.kDpi, format, null);
             bitmap.WritePixels(new Int32Rect(0, 0, e.DepthInfo.Width, e.DepthInfo.Height), e.DepthData, stride, 0);
             bitmap.Freeze();
             return bitmap;
@@ -177,9 +167,7 @@ namespace Sensor
         {
             var format = PixelFormats.Gray16;
             int stride = e.IRInfo.Width * format.BitsPerPixel / 8;
-
-            WriteableBitmap bitmap;
-            bitmap = new WriteableBitmap(e.IRInfo.Width, e.IRInfo.Height, Constants.kDpi, Constants.kDpi, format, null);
+            WriteableBitmap bitmap = new WriteableBitmap(e.IRInfo.Width, e.IRInfo.Height, Constants.kDpi, Constants.kDpi, format, null);
             bitmap.WritePixels(new Int32Rect(0, 0, e.IRInfo.Width, e.IRInfo.Height), e.IRData, stride, 0);
             bitmap.Freeze();
             return bitmap;

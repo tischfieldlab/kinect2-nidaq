@@ -201,8 +201,8 @@ namespace kinect2_nidaq.Models
                     //depthEventArgs.TimeStamp = CurrentNITimeStamp;
                     DepthInfo = this.DepthInfo
                 };
-                depthEventArgs.DepthData = new ushort[this.DepthInfo.Size];
-                data.Depth.Memory.ToArray().CopyTo(depthEventArgs.DepthData, 0);
+                depthEventArgs.DepthData = new ushort[this.DepthInfo.Width * this.DepthInfo.Height];
+                data.Depth.GetPixels<ushort>().ToArray().CopyTo(depthEventArgs.DepthData, 0);
 
                 this.DepthFrameProduced?.Invoke(this, depthEventArgs);
             }
@@ -224,7 +224,7 @@ namespace kinect2_nidaq.Models
                     IRInfo = this.IRInfo
                 };
                 IREventArgs.IRData = new ushort[this.IRInfo.Size];
-                data.IR.Memory.ToArray().CopyTo(IREventArgs.IRData, 0);
+                data.IR.GetPixels<ushort>().ToArray().CopyTo(IREventArgs.IRData, 0);
 
                 this.IRFrameProduced?.Invoke(this, IREventArgs);
             }

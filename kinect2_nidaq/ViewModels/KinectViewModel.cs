@@ -220,7 +220,7 @@ namespace kinect2_nidaq.ViewModels
             set
             {
                 this.SetField(ref this._lastDepthFrame, value);
-                Task.Run(() => this.LastDepthFrameBitmap = this._lastDepthFrame.ToBitmap());
+                Task.Run(() => this.LastDepthFrameBitmap = this._lastDepthFrame.ToDisplayBitmap());
             }
         }
         public BitmapSource LastDepthFrameBitmap
