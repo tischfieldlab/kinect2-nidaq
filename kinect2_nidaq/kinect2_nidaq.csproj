@@ -209,14 +209,15 @@
     <Compile Include="Models\FilePathHelper.cs" />
     <Compile Include="Models\FileRelocator.cs" />
     <Compile Include="Models\FPSMonitor.cs" />
-    <Compile Include="Models\IDataWriter.cs" />
+    <Compile Include="Models\Recording\Writers\BitmapVideoFrameWrapper.cs" />
+    <Compile Include="Models\Recording\Writers\IDataWriter.cs" />
     <Compile Include="Models\IKinectDevice.cs" />
     <Compile Include="Models\KinectAzure.cs" />
-    <Compile Include="Models\KinectColorWriterAlt.cs" />
-    <Compile Include="Models\KinectIRWriter.cs" />
-    <Compile Include="Models\KinectDepthFFV1Writer.cs" />
+    <Compile Include="Models\Recording\Writers\KinectColorWriter.cs" />
+    <Compile Include="Models\Recording\Writers\KinectIRWriter.cs" />
+    <Compile Include="Models\Recording\Writers\KinectDepthFFV1Writer.cs" />
     <Compile Include="Models\KinectV2.cs" />
-    <Compile Include="Models\MetadataWriter.cs" />
+    <Compile Include="Models\Recording\Writers\MetadataWriter.cs" />
     <Compile Include="Models\Recording\Recorder.cs" />
     <Compile Include="Models\Recording\IndeterminantRecordingLength.cs" />
     <Compile Include="Models\Recording\IRecordingLengthStrategy.cs" />
@@ -226,14 +227,13 @@
     <Compile Include="Sensor\Extensions.cs" />
     <Compile Include="Sensor\FrameData.cs" />
     <Compile Include="Sensor\NidaqData.cs" />
-    <Compile Include="Models\AnalogDaqWriter.cs" />
+    <Compile Include="Models\Recording\Writers\AnalogDaqWriter.cs" />
     <Compile Include="ViewModels\AnalogDAQ\AnalogNIDAQSettingsViewModel.cs" />
     <Compile Include="ViewModels\AnalogDAQ\AnalogNIDAQViewModel.cs" />
     <Compile Include="ViewModels\Commands\BaseCommand.cs" />
     <Compile Include="ViewModels\Commands\StopRecordingCommand.cs" />
     <Compile Include="ViewModels\Commands\StartRecordingCommand.cs" />
-    <Compile Include="Models\KinectDepthDatWriter.cs" />
-    <Compile Include="Models\KinectColorWriter.cs" />
+    <Compile Include="Models\Recording\Writers\KinectDepthDatWriter.cs" />
     <Compile Include="ViewModels\DigitalDAQ\DigitalNIDAQViewModel.cs" />
     <Compile Include="ViewModels\DigitalDAQ\DigitalNIDAQSettingsViewModel.cs" />
     <Compile Include="ViewModels\DigitalDAQ\DigitalTtlListner.cs" />
@@ -344,6 +344,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="External\ffmpeg-4.2-win-64\ffmpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="External\tar-cs\tar-cs\tar-cs.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -20,11 +20,20 @@ namespace Sensor
         public static System.Drawing.Bitmap ToSystemBitmap(this WriteableBitmap wbmp)
         {
             System.Drawing.Bitmap bitmap = null;
+            BitmapSource bs = null;
+            if (wbmp.Format == PixelFormats.Bgra32)
+            {
+                // convert BGRA32 -> RGBA32
+                bs = new FormatConvertedBitmap(wbmp, PixelFormats.Rgb24, null, 0);
+            } else
+            {
+                bs = (BitmapSource)wbmp;
+            }
 
             using (MemoryStream stream = new MemoryStream())
             {
-                BitmapEncoder enc = new BmpBitmapEncoder();
-                enc.Frames.Add(BitmapFrame.Create((BitmapSource)wbmp));
+                BitmapEncoder enc = new PngBitmapEncoder();
+                enc.Frames.Add(BitmapFrame.Create(bs));
                 enc.Save(stream);
                 bitmap = new System.Drawing.Bitmap(stream);
             }
@@ -101,12 +110,12 @@ namespace Sensor
         public static WriteableBitmap ToBitmap(this DepthFrameEventArgs e)
         {
 
-            PixelFormat format = PixelFormats.Bgr32;
+            PixelFormat format = PixelFormats.Gray16;
 
             //ushort minDepth = e.DepthMinReliableDistance;
             //ushort maxDepth = e.DepthMaxReliableDistance;
 
-            ushort minDepth;
+            /*ushort minDepth;
             ushort maxDepth;
 
             try
@@ -155,12 +164,12 @@ namespace Sensor
 
                 ++colorIndex;
 
-            }
+            }*/
 
             int stride = e.DepthInfo.Width * format.BitsPerPixel / 8;
             WriteableBitmap bitmap;
             bitmap = new WriteableBitmap(e.DepthInfo.Width, e.DepthInfo.Height, Constants.kDpi, Constants.kDpi, format, null);
-            bitmap.WritePixels(new Int32Rect(0, 0, e.DepthInfo.Width, e.DepthInfo.Height), pixels, stride, 0);
+            bitmap.WritePixels(new Int32Rect(0, 0, e.DepthInfo.Width, e.DepthInfo.Height), e.DepthData, stride, 0);
             bitmap.Freeze();
             return bitmap;
         }

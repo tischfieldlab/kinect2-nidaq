@@ -127,7 +127,7 @@ namespace kinect2_nidaq.Models
                 ColorFormat = Microsoft.Azure.Kinect.Sensor.ImageFormat.ColorBGRA32,
                 ColorResolution = this.IsColorStreamEnabled ? ColorResolution.R1536p : ColorResolution.Off,
                 DepthMode = DepthMode.NFOV_Unbinned,
-                SynchronizedImagesOnly = true,
+                SynchronizedImagesOnly = (this.IsColorStreamEnabled && this.IsDepthStreamEnabled) ? true : false,
             });
             this._transform = this._sensor.GetCalibration().CreateTransformation();
             this._isOpen = true;
@@ -151,9 +151,9 @@ namespace kinect2_nidaq.Models
                 {
                     using (Capture capture = this._sensor.GetCapture())
                     {
-                        this.ColorFrameArrived(capture.Reference());
-                        this.DepthFrameArrived(capture.Reference());
-                        this.IRFrameArrived(capture.Reference());
+                        this.ColorFrameArrived(capture);
+                        this.DepthFrameArrived(capture);
+                        this.IRFrameArrived(capture);
                     }
                 }
             });
@@ -170,7 +170,7 @@ namespace kinect2_nidaq.Models
             {
                 var colorEventArgs = new K4AColorFrameEventArgs
                 {
-                    ColorData = data.Color.Memory.ToArray(),
+                    //ColorData = data.Color.Memory.ToArray().copy,
                     //colorEventArgs.TimeStamp = CurrentNITimeStamp;
                     RelativeTime = data.Color.DeviceTimestamp,
                     //colorEventArgs.Transform = 
@@ -179,6 +179,8 @@ namespace kinect2_nidaq.Models
                     DepthInfo = this.DepthInfo,
                     Transform = this._transform
                 };
+                colorEventArgs.ColorData = new byte[this.ColorInfo.Size];
+                data.Color.Memory.ToArray().CopyTo(colorEventArgs.ColorData, 0);
 
                 this.ColorFrameProduced?.Invoke(this, colorEventArgs);
             }
@@ -195,10 +197,12 @@ namespace kinect2_nidaq.Models
                 var depthEventArgs = new DepthFrameEventArgs
                 {
                     RelativeTime = data.Depth.DeviceTimestamp,
-                    DepthData = data.Depth.GetPixels<ushort>().ToArray(),
+                    //DepthData = data.Depth.GetPixels<ushort>().ToArray(),
                     //depthEventArgs.TimeStamp = CurrentNITimeStamp;
                     DepthInfo = this.DepthInfo
                 };
+                depthEventArgs.DepthData = new ushort[this.DepthInfo.Size];
+                data.Depth.Memory.ToArray().CopyTo(depthEventArgs.DepthData, 0);
 
                 this.DepthFrameProduced?.Invoke(this, depthEventArgs);
             }
@@ -215,10 +219,12 @@ namespace kinect2_nidaq.Models
                 var IREventArgs = new IRFrameEventArgs
                 {
                     RelativeTime = data.IR.DeviceTimestamp,
-                    IRData = data.IR.GetPixels<ushort>().ToArray(),
+                    //IRData = data.IR.GetPixels<ushort>().ToArray(),
                     //depthEventArgs.TimeStamp = CurrentNITimeStamp;
                     IRInfo = this.IRInfo
                 };
+                IREventArgs.IRData = new ushort[this.IRInfo.Size];
+                data.IR.Memory.ToArray().CopyTo(IREventArgs.IRData, 0);
 
                 this.IRFrameProduced?.Invoke(this, IREventArgs);
             }

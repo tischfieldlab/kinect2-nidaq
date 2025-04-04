@@ -48,7 +48,7 @@ namespace kinect2_nidaq.Models
         public int Width { get; set; }
         public int Height { get; set; }
         public int FPS { get; set; }
-        public int Size { get { return Width * Height; } }
+        public int Size { get { return Width * Height * 2; } }
     }
 
     public class IRInfo
@@ -56,7 +56,7 @@ namespace kinect2_nidaq.Models
         public int Width { get; set; }
         public int Height { get; set; }
         public int FPS { get; set; }
-        public int Size { get { return Width * Height; } }
+        public int Size { get { return Width * Height * 2; } }
     }
 
     public class DeviceNotFoundException : ApplicationException { }
