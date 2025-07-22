@@ -129,6 +129,7 @@ namespace kinect2_nidaq.Models
                 DepthMode = DepthMode.NFOV_Unbinned,
                 SynchronizedImagesOnly = (this.IsColorStreamEnabled && this.IsDepthStreamEnabled) ? true : false,
             });
+
             this._transform = this._sensor.GetCalibration().CreateTransformation();
             this._isOpen = true;
             this.Run_Capture();

@@ -1,5 +1,4 @@
-﻿using Accord.Video.FFMPEG;
-using Sensor;
+﻿using Sensor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

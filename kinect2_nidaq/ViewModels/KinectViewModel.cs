@@ -47,7 +47,8 @@ namespace kinect2_nidaq.ViewModels
         public KinectViewModel(SettingsViewModel settings)
         {
             this.settings = settings;
-            
+            this._depthMinDisplay = Properties.Settings.Default.DepthMinValue;
+            this._depthMaxDisplay = Properties.Settings.Default.DepthMaxValue;
         }
 
         public ColorInfo ColorInfo { get { return this._sensor.ColorInfo; } }

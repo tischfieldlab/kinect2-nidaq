@@ -1,25 +1,5 @@
-﻿using System;
-using System.Windows;
-using System.IO;
-using System.Windows.Threading;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Threading.Tasks;
-using System.ComponentModel;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
-using System.Threading;
-using Microsoft.Kinect;
-using Sensor;
-using NationalInstruments;
-using NationalInstruments.DAQmx;
-using Accord.Video.FFMPEG;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Newtonsoft.Json;
-using Metadata;
-using GzTar;
 using kinect2_nidaq.ViewModels;
 
 namespace kinect2_nidaq
