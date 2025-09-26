@@ -3,6 +3,7 @@ using Sensor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,17 +18,14 @@ namespace kinect2_nidaq.Models
 
         private bool _isColorStreamEnabled;
         private ColorFrameReader _colorFrameReader;
-        private byte[] _colorData;
         private ColorSpacePoint[] _colorSpacePoints;
 
         private bool _isDepthStreamEnabled;
         private DepthFrameReader _depthFrameReader;
-        private ushort[] _depthData;
 
         public KinectV2()
         {
-            this._colorData = new byte[this.ColorInfo.Size];
-            this._depthData = new ushort[this.DepthInfo.Size];
+
         }
 
         public event EventHandler<ColorFrameEventArgs> ColorFrameProduced;
@@ -43,7 +41,7 @@ namespace kinect2_nidaq.Models
                 return new ColorInfo() {
                     Width = 1920,
                     Height = 1080,
-                    Format = System.Windows.Media.PixelFormats.Bgr32,
+                    Format = System.Windows.Media.PixelFormats.Bgra32,
                     FPS = 30
                 };
             }
@@ -94,7 +92,7 @@ namespace kinect2_nidaq.Models
             }
         }
 
-        public bool IsIRStreamEnabled { get => false; set => throw new NotImplementedException(); }
+        public bool IsIRStreamEnabled { get => false; set {/* do nothing */} }
 
         public bool IsIRStreamSupported => false;
 
@@ -168,34 +166,30 @@ namespace kinect2_nidaq.Models
             using (ColorFrame frame = e.FrameReference.AcquireFrame())
             {
 
-                var colorEventArgs = new K2ColorFrameEventArgs
-                {
-                    RelativeTime = e.FrameReference.RelativeTime
-                    // colorEventArgs.TimeStamp = CurrentNITimeStamp; // TODO
-                };
-                
-
                 if (frame == null)
                 {
                     this.ColorFrameDropped?.Invoke(this, new EventArgs());
                 }
                 else
                 {
+                    var colorEventArgs = new K2ColorFrameEventArgs
+                    {
+                        RelativeTime = frame.RelativeTime,
+                        ColorData = new byte[this.ColorInfo.Size],
+                        ColorInfo = this.ColorInfo,
+                        DepthInfo = this.DepthInfo,
+                        ColorSpacepoints = this._colorSpacePoints,
+                        // colorEventArgs.TimeStamp = CurrentNITimeStamp; // TODO
+                    };
 
                     if (frame.RawColorImageFormat == ColorImageFormat.Bgra)
                     {
-                        frame.CopyRawFrameDataToArray(this._colorData);
+                        frame.CopyRawFrameDataToArray(colorEventArgs.ColorData);
                     }
                     else
                     {
-                        frame.CopyConvertedFrameDataToArray(this._colorData, ColorImageFormat.Bgra);
+                        frame.CopyConvertedFrameDataToArray(colorEventArgs.ColorData, ColorImageFormat.Bgra);
                     }
-
-                    colorEventArgs.RelativeTime = frame.RelativeTime;
-                    colorEventArgs.ColorData = this._colorData;
-                    colorEventArgs.ColorSpacepoints = this._colorSpacePoints;
-                    colorEventArgs.ColorInfo = this.ColorInfo;
-                    colorEventArgs.DepthInfo = this.DepthInfo;
 
                     this.ColorFrameProduced?.Invoke(this, colorEventArgs);
                 }
@@ -215,17 +209,17 @@ namespace kinect2_nidaq.Models
                 else
                 {
                     depthEventArgs.RelativeTime = frame.RelativeTime;
-                    frame.CopyFrameDataToArray(this._depthData);
+                    depthEventArgs.DepthData = new ushort[this.DepthInfo.Width * this.DepthInfo.Height];
+                    frame.CopyFrameDataToArray(depthEventArgs.DepthData);
 
                     // Only map if we're also recording RGB, otherwise not reason to care...
                     if (IsColorStreamEnabled == true)
                     {
-                        this._colorSpacePoints = new ColorSpacePoint[this._depthData.Length];
-                        this._sensor.CoordinateMapper.MapDepthFrameToColorSpace(this._depthData, this._colorSpacePoints);
+                        this._colorSpacePoints = new ColorSpacePoint[depthEventArgs.DepthData.Length];
+                        this._sensor.CoordinateMapper.MapDepthFrameToColorSpace(depthEventArgs.DepthData, this._colorSpacePoints);
                     }
 
                     // depthEventArgs.TimeStamp = CurrentNITimeStamp; // TODO
-                    depthEventArgs.DepthData = this._depthData;
                     depthEventArgs.DepthInfo = this.DepthInfo;
                     depthEventArgs.DepthMinReliableDistance = frame.DepthMinReliableDistance;
                     depthEventArgs.DepthMaxReliableDistance = frame.DepthMaxReliableDistance;
