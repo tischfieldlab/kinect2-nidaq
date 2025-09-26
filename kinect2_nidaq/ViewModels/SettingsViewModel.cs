@@ -1,4 +1,5 @@
-﻿using kinect2_nidaq.ViewModels.AnalogDAQ;
+﻿using kinect2_nidaq.Models;
+using kinect2_nidaq.ViewModels.AnalogDAQ;
 using kinect2_nidaq.ViewModels.DigitalDAQ;
 using System;
 using System.Collections.Generic;
@@ -122,6 +123,22 @@ namespace kinect2_nidaq.ViewModels
             set => this.SetField(ref this._isIRStreamEnabled, value);
         }
         private bool _isIRStreamEnabled;
+
+        public bool IsIRStreamSupported
+        {
+            get
+            {
+                if (Properties.Settings.Default.DeviceType == "K4A")
+                {
+                    return true;
+                }
+                else if (Properties.Settings.Default.DeviceType == "KinectV2")
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
 
 
         public AnalogNIDAQSettingsViewModel AnalogNIDAQ { get; set; }

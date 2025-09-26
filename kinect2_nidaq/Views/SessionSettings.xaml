@@ -150,7 +150,8 @@
                     </CheckBox>
                     <CheckBox VerticalAlignment="Center"
                           Name="CheckIRStream"
-                          IsChecked="{Binding Path=Settings.IsIRStreamEnabled}">
+                          IsChecked="{Binding Path=Settings.IsIRStreamEnabled}"
+                          IsEnabled="{Binding Path=Settings.IsIRStreamSupported}">
                         <TextBlock Text="IR Stream" />
                     </CheckBox>
                     <CheckBox VerticalAlignment="Center"
